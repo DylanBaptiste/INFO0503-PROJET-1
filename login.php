@@ -1,74 +1,96 @@
-<form enctype="application/json" action="./login.php" method="post">
-<fieldset>
-    <legend>Formulaire</legend>
-        <p>
-            <label>Envoyer le fichier :</label>
-            <input name="data" type="text" value='{"login": "toto", "mdp": "toto"}'/>
-            <input type="submit" name="submit" value="tester" />
-        </p>
-</fieldset>
-</form>
-
 <?php
+header("Content-type:application/json");
 
-header("Content-type : application/json");
+include("api.php");
+$api = new api();
 
+//n'affiche pas les erreurs
+//error_reporting(0);
+//ini_set('display_errors', 0);
+
+
+// /!\ utiliser @$_POST au lieu de $_POST pour acceder au key car ca permet de donner null plutot qu'une erreur si la key existe pas, enfin je crois (ne pas le faire pour les if isset(...))/!\
+
+
+/*===== FORMAT DES REQUETE ====*/
 /*
-{"login": "toto", "mdp": "toto"}
-"{\"login\":\"toto\",\"mdp\":\"monmdp\"}"
-"{\"data\":{\"login\":\"toto\",\"mdp\":\"monmdp\"}}"
+
+actuellement:
+{
+    "data": {
+        "action": 1,
+        "identifiant": "toto",
+        "mdp": "toto"
+    }
+}
+
+
+ou alors:
+
+{
+    "action": 1,
+    "identifiant": "toto",
+    "mdp": "toto"
+}
+
+
+ou alors:
+
+{
+    "action": 1,
+    "data": {
+        "identifiant": "toto",
+        "mdp": "toto"
+    }
+}
+
+
 */
-if(isset($_POST['data'])) {
-    $tableauRecu = json_decode($_POST['data'], true);
-    echo print_r($tableauRecu);
-    if(isset($tableauRecu['login']) && isset($tableauRecu['mdp'])) {
-        
-        if(($tableauRecu['login'] != "") && ($tableauRecu['mdp'] != "")) {
-            //$tableau = array("code" => "OK", "message" => "login correct");
-           
-                $tableau = array("login" => $tableauRecu['login'], "mdp" => $tableauRecu['mdp']);
-   
-                // Préparation des données pour la requête
-                $data = http_build_query(
-                        array(
-                            'data' => json_encode($tableau)
-                        )
-                    );
 
-                // Préparation de la requête
-                $options = array('http' =>
-                        array(
-                            'method'  => 'POST',
-                            'header'  => 'Content-type: application/x-www-form-urlencoded',
-                            'content' => $data
-                        )
-                    );
+/* ====== CODE DES ACTIONS ====== */
+/*
+    1-  login
+    2-  ...
+*/
 
-                // Envoi de la requête et lecture du JSON reçu
 
-                $contexte  = stream_context_create($options);
-                $jsonTexte = file_get_contents('http://localhost/projet0503/INFO0503-PROJET-1/APPLI_JAVA.php', false, $contexte);
-                
-                echo("<br><br>recus par la requete: <br>");
-                echo "<br><br>text brut:";
-                var_dump($jsonTexte);
-
-                echo "<br><br>tableau genéré:";
-                $tableau = json_decode($jsonTexte, true);
-                var_dump($tableau);
-
-        }
-        else {
-            $tableau = array("code" => "erreur", "message" => "login incorrect");
-            //login incorect
+if( !isset($_POST['data']) )
+{
+    echo $api->error('Donnée non envoyé ou mal formé. (format correct actuellement en POST : {"data": {"action": 666, "bidule1": "truc"}} )');
+    
+    //test les fonctions ici en attendant que le client java soit fait:
+    //echo $api->login(@$_POST['data']['login'], @$_POST['data']['mdp']);
+    /* 
+    //chainage d'action pour tester hasMakeAResponse
+    $api->login(@$_POST['data']['login'], @$_POST['data']['mdp']);
+    $api->login(@$_POST['data']['login'], @$_POST['data']['mdp']);
+    */
+}
+else
+{
+    if(!isset($_POST['data']['action']))
+    {
+        echo $api->error("Aucune action choisie.");
+    }
+    else
+    {
+        switch ($_POST['data']['action']) {
+            case "1":
+                //login logique
+                echo $api->login(@$_POST['data']['login'], @$_POST['data']['mdp']);
+                break;
+            case "2":
+                //logique de l'action 2
+                echo $api->error("action pas implémenté");
+                break;
+            //et cetera...
+            default:
+                echo $api->error("Cette action n'existe pas");
+                break;
         }
     }
-    else {
-        //pas de donnee
-        $tableau = array("code" => "erreur", "message" => "données manquantes.");
-    }
 }
-else {
-    //donnee mal formé
-    $tableau = array("code" => "erreur", "message" => "pas de données en POST.");
-}
+
+
+
+?>

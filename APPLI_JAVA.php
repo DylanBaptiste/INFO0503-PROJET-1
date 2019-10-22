@@ -7,5 +7,6 @@ $data = json_decode($_POST["data"]);
 
 { error: "explication de l'erreur" }
 */
+$retour = array('success' => "ce message est parvenu du fake serveur java d'autentification \o/" );
 echo json_encode($data);
 ?>
