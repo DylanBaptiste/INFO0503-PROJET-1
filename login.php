@@ -1,9 +1,11 @@
 <?php
-header("Content-type:application/json");
+//header("Content-type:application/json");
 
 include("api.php");
 $api = new api();
 
+$data = json_decode(file_get_contents('php://input'), true);
+print_r($data);
 //n'affiche pas les erreurs
 //error_reporting(0);
 //ini_set('display_errors', 0);
@@ -53,18 +55,18 @@ ou alors:
     2-  ...
 */
 
-
+/*
 if( !isset($_POST['data']) )
 {
     echo $api->error('Donnée non envoyé ou mal formé. (format correct actuellement en POST : {"data": {"action": 666, "bidule1": "truc"}} )');
-    
+    */
     //test les fonctions ici en attendant que le client java soit fait:
     //echo $api->login(@$_POST['data']['login'], @$_POST['data']['mdp']);
     /* 
     //chainage d'action pour tester hasMakeAResponse
     $api->login(@$_POST['data']['login'], @$_POST['data']['mdp']);
     $api->login(@$_POST['data']['login'], @$_POST['data']['mdp']);
-    */
+    *//*
 }
 else
 {
@@ -92,5 +94,5 @@ else
 }
 
 
-
+*/
 ?>
