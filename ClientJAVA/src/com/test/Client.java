@@ -120,38 +120,32 @@ public class Client {
 	 * effectu une requete vers le serveur php
 	 * @return une String de la reponse recus
 	 */
-	public String makeRequest(JSONObject data){
-		// Mise en forme de l'URL
+	private String makeRequest(JSONObject data){
+		
 		URL url = null;
 		try { 
 			url = new URL(URL_LOGIN); 
 		} catch(MalformedURLException e) { 
-			System.err.println("URL incorrect : " + e);
-			System.exit(-1);
+			return ("URL incorrect : " + e);
 		}
 
-		// Etablissement de la connexion
 		URLConnection connexion = null; 
 		try { 
 			connexion = url.openConnection(); 
 			connexion.setDoOutput(true);
 		} catch(IOException e) { 
-			System.err.println("Connexion impossible : " + e);
-			System.exit(-1);
+			return("Connexion impossible : " + e);
 		}
 
-		// Envoi de la requête
 		try {
 			OutputStreamWriter writer = new OutputStreamWriter(connexion.getOutputStream());
 			writer.write(data.toString());
 			writer.flush();
 			writer.close();
 		} catch(IOException e) {
-			System.err.println("Erreur lors de l'envoi de la requete : " + e);
-			System.exit(-1);            
+			return ("Erreur lors de l'envoi de la requete : " + e);        
 		}
 
-		// Réception des données depuis le serveur
 		String response = ""; 
 		try { 
 			BufferedReader reader = new BufferedReader(new InputStreamReader( connexion.getInputStream())); 
@@ -160,13 +154,8 @@ public class Client {
 				response += tmp; 
 			reader.close(); 
 		} catch(Exception e) { 
-			System.err.println("Erreur lors de la lecture de la réponse : " + e);
-			System.exit(-1);
+			return ("Erreur lors de la lecture de la réponse : " + e);
 		}
-		
-		// Affichage des données reçues
-		/*System.out.println("Réponse du serveur : ");
-		System.out.println(response);*/
 		
 		return response;
 	}

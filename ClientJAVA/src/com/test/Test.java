@@ -59,16 +59,23 @@ public class Test {
 					/*
 					JSONO
 					*/
-					JSONObject jsonRequest = new JSONObject(resultRequest);
-					String success = getKey(jsonRequest, "success");//"";//jsonRequest.getString("success");
-					String error   = getKey(jsonRequest, "error");
-					
-					if(success != ""){
-						resultRequest = "Requete reussi: "+ success;
-						//client.setLogin(login); <- dans la fonction requestLogin ?
-					}else{
-						resultRequest = "Une erreur est survenu: " + error;
+					System.out.println(resultRequest);
+					try{
+						JSONObject jsonRequest = new JSONObject(resultRequest);
+						String success = getKey(jsonRequest, "success");//"";//jsonRequest.getString("success");
+						String error   = getKey(jsonRequest, "error");
+						
+						if(success != ""){
+							resultRequest = "Requete reussi: "+ success;
+							//client.setLogin(login); <- dans la fonction requestLogin ?
+						}else{
+							resultRequest = "Une erreur est survenu: " + error;
+						}
+					}catch(JSONException e){
+						resultRequest += "\nimpossible de parser la reponse";
 					}
+					
+					
 
 					break;
 				}
