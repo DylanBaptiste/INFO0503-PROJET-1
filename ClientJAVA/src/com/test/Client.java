@@ -21,12 +21,14 @@ import java.net.MalformedURLException;
 public class Client {
 
 	private String URL_LOGIN = "http://localhost/INFO0503-PROJET-1/ServeurPHP/login.php";
-	private String login;
-	private String password;
+	private static int LOGIN_ACTION = 1;
 
-	public Client (String login ,String password ) {
-		this.login = login;
-		this.password = password;
+	private String login = "";
+	private String password = "";
+
+	public Client () {
+		this.login = "";
+		this.password = "";
 	}
 
 	public String getLogin() {
@@ -52,71 +54,122 @@ public class Client {
 		return new JSONObject(this);
 	}
 	
-    public static Client deserializeClient(JSONObject json) {
+   	/*public static Client deserializeClient(JSONObject json) {
         String password =  json.getString("password");
         String login = json.getString("login");
         return new Client(login,password);
+	}*/
+
+	/**
+	 * Genere une requqte de login
+	 * @return une String de la réponse du serveur
+	 */
+	public String requestLogin(Scanner saisieUtilisateur){
+
+		System.out.print("\033[H\033[2J");  
+		System.out.flush();
+		System.out.flush();
+
+		System.out.print("login: ");
+		String RecupLogin = saisieUtilisateur.nextLine();
+		System.out.print("mot de passe: ");
+		String RecupPassword = saisieUtilisateur.nextLine();
+
+
+		JSONObject data = new JSONObject()
+			.put("action", LOGIN_ACTION)
+			.put("login", RecupLogin)
+			.put("password", RecupPassword);
+
+		return makeRequest(data);
+		
+	}
+
+	public String requestSeePoll(String userID){
+
+		JSONObject data = new JSONObject()
+			.put("action", 4)
+			.put("userID", userID);
+
+		return makeRequest(data);
+		
+	}
+
+	/**
+	 * Procedure qui affiche le resultat de la derniere requete et le menu en fonction de l'etat du client
+	 * @param lastResultRequest
+	 */
+	public void displayMenu(String lastResultRequest){
+			System.out.flush();
+			System.out.println("\033[H\033[2J");  
+			System.out.flush();
+
+			System.out.println(lastResultRequest);
+			System.out.println("\n---------OPTIONS----------");
+			System.out.println( this.login == "" ?  "| ("+LOGIN_ACTION+") login	 |" : "| Vous etes connecté	|");
+			System.out.println("| (1)  Repondre Sondage   |");
+			System.out.println("| (2)  Creer Sondage      |");
+			System.out.println("| (3)  Voir le nom de ses Sondages       |");
+			System.out.println("| (4) Voir Reponse Sondage|");
+			System.out.println("| (6) quitter			  |");
+			System.out.println(" -------------------------");
+
+	}
+
+	/**
+	 * effectu une requete vers le serveur php
+	 * @return une String de la reponse recus
+	 */
+	public String makeRequest(JSONObject data){
+		// Mise en forme de l'URL
+		URL url = null;
+		try { 
+			url = new URL(URL_LOGIN); 
+		} catch(MalformedURLException e) { 
+			System.err.println("URL incorrect : " + e);
+			System.exit(-1);
+		}
+
+		// Etablissement de la connexion
+		URLConnection connexion = null; 
+		try { 
+			connexion = url.openConnection(); 
+			connexion.setDoOutput(true);
+		} catch(IOException e) { 
+			System.err.println("Connexion impossible : " + e);
+			System.exit(-1);
+		}
+
+		// Envoi de la requête
+		try {
+			OutputStreamWriter writer = new OutputStreamWriter(connexion.getOutputStream());
+			writer.write(data.toString());
+			writer.flush();
+			writer.close();
+		} catch(IOException e) {
+			System.err.println("Erreur lors de l'envoi de la requete : " + e);
+			System.exit(-1);            
+		}
+
+		// Réception des données depuis le serveur
+		String response = ""; 
+		try { 
+			BufferedReader reader = new BufferedReader(new InputStreamReader( connexion.getInputStream())); 
+			String tmp; 
+			while((tmp = reader.readLine()) != null) 
+				response += tmp; 
+			reader.close(); 
+		} catch(Exception e) { 
+			System.err.println("Erreur lors de la lecture de la réponse : " + e);
+			System.exit(-1);
+		}
+		
+		// Affichage des données reçues
+		/*System.out.println("Réponse du serveur : ");
+		System.out.println(response);*/
+		
+		return response;
 	}
 	
-	public String requestLogin(String l, String p){
-		/*
-	{"data": {"login": "toto", "mdp": "toto"}}
-	-faire la requete vers http://localhost:80/INFO0503-PROJET-1/login.php en post avec le login et mdp
-	-suivant la reponse le client est co ou pas
-	-methode de co securisé ou non ?
-	*/
-
-	JSONObject data =  new JSONObject();
-	data.put("login", l);
-	data.put("password", p);
-	//JSONObject data = new JSONObject().put("data", new JSONObject().put("login", RecupLogin).put("mdp", RecupPassword));
-
-	// Mise en forme de l'URL
-	URL url = null;
-	try { 
-		url = new URL(URL_LOGIN); 
-	} catch(MalformedURLException e) { 
-		System.err.println("URL incorrect : " + e);
-		System.exit(-1);
-	}
-
-	// Etablissement de la connexion
-	URLConnection connexion = null; 
-	try { 
-		connexion = url.openConnection(); 
-		connexion.setDoOutput(true);
-	} catch(IOException e) { 
-		System.err.println("Connexion impossible : " + e);
-		System.exit(-1);
-	}
-
-	// Envoi de la requête
-	try {
-		OutputStreamWriter writer = new OutputStreamWriter(connexion.getOutputStream());
-		writer.write(data.toString());
-		writer.flush();
-		writer.close();
-	} catch(IOException e) {
-		System.err.println("Erreur lors de l'envoi de la requete : " + e);
-		System.exit(-1);            
-	}
-
-	// Réception des données depuis le serveur
-	String donnees = ""; 
-	try { 
-		BufferedReader reader = new BufferedReader(new InputStreamReader( connexion.getInputStream())); 
-		String tmp; 
-		while((tmp = reader.readLine()) != null) 
-			donnees += tmp; 
-		reader.close(); 
-	} catch(Exception e) { 
-		System.err.println("Erreur lors de la lecture de la réponse : " + e);
-		System.exit(-1);
-	}
 	
-	// Affichage des données reçues
-	System.out.println("Réponse du serveur : ");
-	System.out.println(donnees);
-	return donnees;
-	}
 }
