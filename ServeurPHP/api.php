@@ -25,18 +25,38 @@ class api
 	 * @param $mdp string mot de passe de l'utilisateur
 	 * @return réponse du serveur d'auth JSON encodé
 	 */
-	public function login($identifiant = "dqsdf", $mdp = ""){
+	public function login($login = "dqsdf", $password = ""){
 		/*
 		if($this->hasMakeAResponse){
 			$this->hasMakeAResponse = true;
 			return null;
 		}
 		*/
-		if($identifiant == "") 	return $this->error("auncun identifiant donné");
-		if($mdp == "") 			return $this->error("auncun mdp donné");
 
-		//on ballance la requete au serveur d'auth java ici
-		return json_encode(array("error" => "login pas encore implementé"));
+		if($login == "") 	return $this->error("auncun login donné");
+		if($password == "") 			return $this->error("auncun password donné");
+
+		$url = 'http://localhost:666';
+		$data = array('login' => $login, 'password' => $password);
+
+		$options = array(
+			'http' => array(
+				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+				'method'  => 'POST',
+				'content' => http_build_query($data)
+			)
+		);
+
+		$context  = stream_context_create($options);
+		$result = file_get_contents($url, false, $context);
+
+		if ($result === FALSE) { 
+			return $this->error("Login erreur");
+		}else{
+			return $this->success("Login reussi");
+		}
+
+		
 	}
 
 	/**

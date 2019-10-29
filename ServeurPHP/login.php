@@ -6,27 +6,6 @@ $api = new api();
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-//n'affiche pas les erreurs
-//error_reporting(0);
-//ini_set('display_errors', 0);
-
-/*
-===== FORMAT DES REQUETE ====
-
-actuellement:
-{
-    "action": 1,
-    "identifiant": "toto",
-    "mdp": "toto"
-}
-
-====== CODE DES ACTIONS ====== 
-
-    1-  login
-    2-  ...
-*/
-
-
 if( isset($data) )
 {
     if(isset($data['action']))
@@ -40,7 +19,7 @@ if( isset($data) )
                 break;
 
             case "2":
-                echo $api->error("Action pas implémenté");
+                echo $api->error("Action non implémenté");
                 break;
 
             default:
