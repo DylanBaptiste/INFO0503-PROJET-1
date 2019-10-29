@@ -66,7 +66,7 @@ public class Client {
 	 */
 	public String requestLogin(Scanner saisieUtilisateur){
 
-		System.out.print("\033[H\033[2J");  
+		//System.out.print("\033[H\033[2J");  
 		System.out.flush();
 		System.out.flush();
 
@@ -101,7 +101,7 @@ public class Client {
 	 */
 	public void displayMenu(String lastResultRequest){
 			System.out.flush();
-			System.out.println("\033[H\033[2J");  
+			//System.out.println("\033[H\033[2J");  
 			System.out.flush();
 
 			System.out.println(lastResultRequest);

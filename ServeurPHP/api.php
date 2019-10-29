@@ -25,7 +25,7 @@ class api
 	 * @param $mdp string mot de passe de l'utilisateur
 	 * @return réponse du serveur d'auth JSON encodé
 	 */
-	public function login($login = "dqsdf", $password = ""){
+	public function login($login = "", $password = ""){
 		/*
 		if($this->hasMakeAResponse){
 			$this->hasMakeAResponse = true;
@@ -34,16 +34,16 @@ class api
 		*/
 
 		if($login == "") 	return $this->error("auncun login donné");
-		if($password == "") 			return $this->error("auncun password donné");
+		if($password == "") return $this->error("auncun password donné");
 
-		$url = 'http://localhost:666';
+		$url = 'http://localhost:8080/login.html';
 		$data = array('login' => $login, 'password' => $password);
 
 		$options = array(
 			'http' => array(
-				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+				'header'  => "Content-Type: application/json\r\n",
 				'method'  => 'POST',
-				'content' => http_build_query($data)
+				'content' => json_encode($data)
 			)
 		);
 
@@ -51,9 +51,9 @@ class api
 		$result = file_get_contents($url, false, $context);
 
 		if ($result === FALSE) { 
-			return $this->error("Login erreur");
+			return $this->error("Une erreur est survenu lors de la connexion, le PHP n'est pas en cause.");
 		}else{
-			return $this->success("Login reussi");
+			return $result; //<- result est deja un json généré par je java {success: "login reussi", "id": 666} ou {error: "eugneugneu l'erreur"}
 		}
 
 		
