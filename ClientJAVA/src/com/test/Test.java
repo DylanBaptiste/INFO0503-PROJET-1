@@ -38,7 +38,7 @@ public class Test {
 
 			client.displayMenu(resultRequest);
 			System.out.println();
-			System.out.println("Votre choix: ");
+			System.out.print("Votre choix: ");
 
 			recupOption = Integer.parseInt( saisieUtilisateur.nextLine() );
 
