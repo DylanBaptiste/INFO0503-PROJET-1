@@ -23,31 +23,22 @@ public class Client {
 	private String URL_LOGIN = "http://localhost/INFO0503-PROJET-1/ServeurPHP/login.php";
 	private static int LOGIN_ACTION = 1;
 
-	private String login = "";
-	private String password = "";
+	private String id = "";
 
 	public Client () {
-		this.login = "";
-		this.password = "";
 	}
 
-	public String getLogin() {
-		return login;
+	public String getId() {
+		return id;
 	}
 
-	public void setLogin(String login) {
-		this.login = login;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public String getPassword() {
-		return password;
-	}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
     public String toString() {
-        return " login : " + login + " mdp :" + password ;
+        return this.id;
     }
 	
 	public JSONObject toJSON() {
@@ -106,7 +97,7 @@ public class Client {
 
 			System.out.println(lastResultRequest);
 			System.out.println("\n---------OPTIONS----------");
-			System.out.println( this.login == "" ?  "| ("+LOGIN_ACTION+") login	 |" : "| Vous etes connecté	|");
+			System.out.println( this.id == "" ?  "| ("+LOGIN_ACTION+") login	 |" : "| Vous etes connecté	|");
 			System.out.println("| (1)  Repondre Sondage   |");
 			System.out.println("| (2)  Creer Sondage      |");
 			System.out.println("| (3)  Voir le nom de ses Sondages       |");

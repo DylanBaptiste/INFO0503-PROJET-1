@@ -60,6 +60,46 @@ class api
 	}
 
 	/**
+	 * Envoie une requte de creation de compte au serveur d'auth java
+	 * @param $login string login unique de l'utilisateur
+	 * @param $password string mot de passe de l'utilisateur
+	 * @param $confirmPassword string confirmation du mot de passe de l'utilisateur
+	 * @return réponse du serveur d'auth JSON encodé
+	 */
+	public function create($login = "", $password = "", $confirmPassword = ""){
+
+		if($login == "") 			return $this->error("auncun login donné");
+		if($password == "") 		return $this->error("auncun password donné");
+		if($confirmPassword == "") 	return $this->error("auncun confirmPassword donné");
+
+		if($password != confirmPassword){
+			return $this->error("Le mot de passe et la confirmation de mot de passe n'est pas la meme.");
+		}
+
+		$url = 'http://localhost:8081/create.html';
+		$data = array('login' => $login, 'password' => $password, 'confirmPassword' => $confirmPassword);
+
+		$options = array(
+			'http' => array(
+				'header'  => "Content-Type: application/json\r\n",
+				'method'  => 'POST',
+				'content' => json_encode($data)
+			)
+		);
+
+		$context  = stream_context_create($options);
+		$result = file_get_contents($url, false, $context);
+
+		if ($result === FALSE) { 
+			return $this->error("Une erreur est survenu lors de la connexion, le PHP n'est pas en cause.");
+		}else{
+			return $result; //<- result est deja un json généré par je java {success: "login reussi", "id": 666} ou {error: "eugneugneu l'erreur"}
+		}
+
+		
+	}
+
+	/**
 	 * @param $identifiant string identifiant unique de l'utilisateur
 	 * @param $id string identifiant du sondage
 	 * @param $rep string indice de la reponse

@@ -51,7 +51,7 @@ class LoginHandler implements HttpHandler {
 		
 		if( jsonQuerry.has("login") ){
 			loginU = jsonQuerry.getString("login");
-			loginU.replaceAll("[%~/. ]", ""); // <- faille si pas ca je pense
+			loginU.replaceAll("[%~/. ]", "");
 		}
 		else{
 			sendError("Aucun login envoyé");

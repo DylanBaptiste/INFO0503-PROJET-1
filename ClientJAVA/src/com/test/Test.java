@@ -64,7 +64,7 @@ public class Test {
 						
 						if(success != ""){
 							resultRequest = "Requete reussi: "+ success;
-							//client.setLogin(login); <- dans la fonction requestLogin ?
+							client.setId(getKey(jsonRequest, "id"));
 						}else{
 							resultRequest = "Une erreur est survenu: " + error;
 						}
