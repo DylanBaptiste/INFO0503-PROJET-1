@@ -23,7 +23,7 @@ class LoginHandler implements HttpHandler {
 
 		this.Exchange = t;
 		
-		String query = "TEST";
+		String query = "";
 		try{
 			query = readRequest();
 		}
@@ -77,11 +77,14 @@ class LoginHandler implements HttpHandler {
 			return;
 		}
 
-		sendSuccess("test", 1);
+
 		
-		if(localJsonUser.has("password") && localJsonUser.getString("password") == passwordU){
+		if( passwordU.equals(localJsonUser.getString("password")) ){
 			sendSuccess("login reussi", localJsonUser.getInt("id"));
 		}else{
+			System.out.println(localJsonUser.getString("password"));
+
+			System.out.println(passwordU);
 			sendError("Mauvais mot de passe");
 			return;
 		}
