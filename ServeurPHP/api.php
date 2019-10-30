@@ -36,7 +36,7 @@ class api
 		if($login == "") 	return $this->error("auncun login donné");
 		if($password == "") return $this->error("auncun password donné");
 
-		$url = 'http://localhost:8080/login.html';
+		$url = 'http://localhost:8081/login.html';
 		$data = array('login' => $login, 'password' => $password);
 
 		$options = array(

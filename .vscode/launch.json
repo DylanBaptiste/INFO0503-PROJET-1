@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Test",
+            "request": "launch",
+            "mainClass": "com.test.Test",
+            "projectName": "test_vs_code"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - ServeurHttp",
             "request": "launch",
             "mainClass": "ServeurHttp"

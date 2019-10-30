@@ -25,11 +25,11 @@ class LoginHandler implements HttpHandler {
 			JSONObject test = new JSONObject().put("success", "qsd").put("id", 1);
 			System.out.println("test: " + test.toString());
 		}
-		catch(Execption e){
+		catch(Exception e){
 			e.printStackTrace();
 		}
 		
-		//sendSuccess("c'est ok ma couille", 1);
+		sendSuccess("c'est ok ma couille", 1);
 		//sendError("test");
 		/*this.Exchange = t;
 		
