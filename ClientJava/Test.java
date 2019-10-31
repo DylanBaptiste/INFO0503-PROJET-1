@@ -1,6 +1,10 @@
-package com.test;
+package clientjava;
 
 import java.util.Scanner;
+
+import javax.naming.ldap.ManageReferralControl;
+
+import java.awt.Color;
 
 import org.json.*;
 
@@ -19,66 +23,80 @@ import org.json.*;
 
 public class Test {
 
-	public static String getKey(JSONObject json, String key){
+	private static String getKey(JSONObject json, String key){
 		return json.has(key) ? json.optString(key) : "";
 	}
 
-	
-
-
+	private static String manageResult(String resultRequest){
+		try{
+			JSONObject jsonRequest = new JSONObject(resultRequest);
+			String success = getKey(jsonRequest, "success");
+			String error   = getKey(jsonRequest, "error");
+			
+			if(success != ""){
+				resultRequest = "\033[32m"+ success;
+			}else{
+				resultRequest = "\033[31m"+ error;
+			}
+		}catch(JSONException e){
+			resultRequest += "\nimpossible de parser la reponse";
+		}
+		return resultRequest;
+	}
 	public static void main(String[] args) {	
 
 		Client client = new Client();
 		String resultRequest = "";
-		int recupOption = 0;
+		String recupOption = "0";
 
 		Scanner saisieUtilisateur = new Scanner(System.in);
 
 		do{
 
 			client.displayMenu(resultRequest);
-			System.out.println();
+			resultRequest = "";
+			
 			System.out.print("Votre choix: ");
 
-			recupOption = Integer.parseInt( saisieUtilisateur.nextLine() );
+			recupOption =  saisieUtilisateur.nextLine();
 
 			
 			switch(recupOption){
 
 			
-				case 1:
+				case "1":
 				{
 					resultRequest = client.requestLogin(saisieUtilisateur);
-					/*
-					serealiser resultRequest
-					effectuer les action en conséquence de la reponse
-					*/
-					/*
-					JSONO
-					*/
-					System.out.println(resultRequest);
+					
+					
 					try{
 						JSONObject jsonRequest = new JSONObject(resultRequest);
-						String success = getKey(jsonRequest, "success");//"";//jsonRequest.getString("success");
-						String error   = getKey(jsonRequest, "error");
-						
-						if(success != ""){
-							resultRequest = "Requete reussi: "+ success;
-							//client.setLogin(login); <- dans la fonction requestLogin ?
-						}else{
-							resultRequest = "Une erreur est survenu: " + error;
-						}
-					}catch(JSONException e){
-						resultRequest += "\nimpossible de parser la reponse";
+						client.setId(getKey(jsonRequest, "id"));
 					}
-					
-					
+					catch(Exception e){}
 
+					resultRequest = manageResult(resultRequest);
+					
 					break;
 				}
-				case 2: 
-				{
-					System.out.println("Bienvenue sur l'interfaxe de Creation du Sondage ");
+				case "2": {
+
+					resultRequest = client.requestCreate(saisieUtilisateur);
+					
+
+					try{
+						JSONObject jsonRequest = new JSONObject(resultRequest);
+						client.setId(getKey(jsonRequest, "id"));
+					}
+					catch(Exception e){}
+
+					resultRequest = manageResult(resultRequest);
+					
+					break;
+				}
+		
+				case "3":
+				{					System.out.println("Bienvenue sur l'interfaxe de Creation du Sondage ");
 					System.out.println("Veuillez donner un titre à votre sondage :");
 					//String RecupTitreSondage = saisieUtilisateur.nextLine();
 					
@@ -97,29 +115,30 @@ public class Test {
 					}
 					System.out.println(RecupQuestion);
 					System.out.println(RecupReponse);
-					break;
-					
-				}
-				case 3:
-				{
 					System.out.print("Bienvenue sur l'interfaxe pour voir Sondage");
 					break;
 				}
-				case 4: 
+				case "4": 
 				{
 					System.out.print("Tu casses les couilles");
 					break;
 				}
-				case 6: 
+				case "8": 
 				{
 					System.out.print("Salut mon pote");
 					break;
 				}
+				case "9": 
+				{
+					client.setId("");
+					resultRequest = "\033[32mVous vous êtes déconnecté.";
+					break;
+				}
 				default: 
-					System.out.print("Cette action n'existe pas");
+					resultRequest = "\033[31mCette action n'existe pas";
 					break;
 			}
-		}while(recupOption != 6);
+		}while( (!recupOption.equals("8")) );
 
 		saisieUtilisateur.close();
 

@@ -1,16 +1,18 @@
-package com.test;
+package serveurjava;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.Headers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Scanner;
 import java.io.OutputStream;
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import org.json.JSONObject;
+import java.io.File;
 
 class LoginHandler implements HttpHandler {
 
@@ -20,41 +22,35 @@ class LoginHandler implements HttpHandler {
 
 		this.Exchange = t;
 		
-		System.out.println("test");
+		String query = "";
 		try{
-			JSONObject test = new JSONObject().put("success", "qsd").put("id", 1);
-			System.out.println("test: " + test.toString());
-		}
-		catch(Execption e){
-			e.printStackTrace();
-		}
-		
-		//sendSuccess("c'est ok ma couille", 1);
-		//sendError("test");
-		/*this.Exchange = t;
-		
-		try{
-			String query = readRequest();
+			query = readRequest();
 		}
 		catch(Exception e){
 			System.out.println(e);
 			sendError(e.toString());
 		}
+
+		
 		
 		// Recuperation des variables recu par le post
 		String loginU	 = "";
 		String passwordU = "";
 
+		JSONObject jsonQuerry  = null;
 		try{
-			JSONObject jsonQuerry = new JSONObject(query);
+			jsonQuerry = new JSONObject(query);
 		}catch(Exception e){
 			sendError("Les données envoyées ne sont pas au format json");
 			return;
 		}
+
+		
+
 		
 		if( jsonQuerry.has("login") ){
 			loginU = jsonQuerry.getString("login");
-			loginU.replaceAll("[%~/. ]", ""); // <- faille si pas ca je pense
+			loginU.replaceAll("[%~/. ]", "");
 		}
 		else{
 			sendError("Aucun login envoyé");
@@ -68,52 +64,32 @@ class LoginHandler implements HttpHandler {
 			sendError("Aucun password envoyé");
 			return;
 		}
+
 		
+		
+		JSONObject localJsonUser = null;
 		try{
-			JSONObject localJsonUser = readJson(loginU+".json");
+			localJsonUser = readJson(loginU);
 		}
 		catch(Exception e){
 			sendError(e.toString());
 			return;
 		}
 
-		System.out.println("Contenu JSON : " );
-		System.out.println( localJsonUser.toString() ) ;
+
 		
-		if(localJsonUser.has("password") && localJsonUser.getString("password") == passwordU){
-			sendSuccess("login reussi", localJsonUser.getInt("id"));
+		if( passwordU.equals(localJsonUser.getString("password")) ){
+			sendSuccess("login reussi", loginU);
 		}else{
+			System.out.println(localJsonUser.getString("password"));
+
+			System.out.println(passwordU);
 			sendError("Mauvais mot de passe");
 			return;
 		}
-		*/
-
-		/*
-		String reponse = "test";
-		// Envoi de l'en-tête Http
-        try {
-            Headers h = t.getResponseHeaders();
-            h.set("Content-Type", "text/html; charset=utf-8");
-            t.sendResponseHeaders(200, reponse.getBytes().length);
-        } catch(IOException e) {
-            System.err.println("Erreur lors de l'envoi de l'en-tête : " + e);
-            System.exit(-1);
-        }
-
-        // Envoi du corps (données HTML)
-        try {
-            OutputStream os = t.getResponseBody();
-            os.write(reponse.getBytes());
-            os.close();
-        } catch(IOException e) {
-            System.err.println("Erreur lors de l'envoi du corps : " + e);
-		}
-		*/
 
 	
 	}
-
-	
 
 	private String readRequest() throws Exception{
 
@@ -122,7 +98,7 @@ class LoginHandler implements HttpHandler {
 		try {
 			br = new BufferedReader(new InputStreamReader(this.Exchange.getRequestBody(),"utf-8"));
 		} catch(UnsupportedEncodingException e) {
-			throw "Votre requete est mal formé: "+e;
+			throw new Exception("Votre requete est mal formé: "+e);
 		}
 	
 		// Récupération des données en POST
@@ -130,7 +106,7 @@ class LoginHandler implements HttpHandler {
 		try {
 			query = br.readLine();
 		} catch(IOException e) {
-			throw "Erreur lors de la lecture d'une ligne: " + e;
+			throw  new Exception("Erreur lors de la lecture d'une ligne: " + e);
 		}
 		
 		return query;
@@ -138,11 +114,12 @@ class LoginHandler implements HttpHandler {
 	}
 
 	private JSONObject readJson(String loginU) throws Exception{
-		fs = null;
+		FileInputStream fs = null;
 		String json = "";
 
+		File fichier = new File("users/"+loginU+".json");
 		try  {
-			fs = new FileInputStream ( loginU+".json" );
+			fs = new FileInputStream ( fichier.getAbsoluteFile() );
 			Scanner scanner = new Scanner ( fs );
 
 			while ( scanner.hasNext() )
@@ -153,13 +130,13 @@ class LoginHandler implements HttpHandler {
 			fs.close();
 		}
 		catch (FileNotFoundException e){
-			throw "L'utilisateur "+loginU+" n'existe pas.";
+			throw new Exception("L'utilisateur "+loginU+" n'existe  pas.");
 		}
 
-		JSONObject objet = new JSONObject( json );
+		return new JSONObject( json );
 	}
 
-	private void sendSuccess(String successMessage, int id){
+	private void sendSuccess(String successMessage, String id){
 		sendPostResponse(new JSONObject().put("success", successMessage).put("id", id));
 	}
 
@@ -192,5 +169,3 @@ class LoginHandler implements HttpHandler {
 
 	
 }
-	        
-

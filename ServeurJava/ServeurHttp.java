@@ -1,9 +1,8 @@
-package com.test;
+package serveurjava;
 import java.io.IOException;
-import com.sun.net.httpserver.HttpServer;
-
-import com.sun.net.httpserver.HttpContext;
 import java.net.InetSocketAddress;
+
+import com.sun.net.httpserver.HttpServer;
 
 public class ServeurHttp {
 
@@ -17,7 +16,7 @@ public class ServeurHttp {
         }
 
         serveur.createContext("/login.html", new LoginHandler());
-        //serveur.createContext("/create.html", new LoginHandler());
+        serveur.createContext("/create.html", new CreateHandler());
         serveur.setExecutor(null);
         serveur.start();
 

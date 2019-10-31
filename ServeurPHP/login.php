@@ -19,7 +19,10 @@ if( isset($data) )
                 break;
 
             case "2":
-                echo $api->error("Action non implémenté");
+                if( isset($data['login']) && isset($data['password']) )
+                    echo $api->create($data['login'], $data['password']);
+                else
+                    echo $api->error("Données de creation non fournis");
                 break;
 
             default:
