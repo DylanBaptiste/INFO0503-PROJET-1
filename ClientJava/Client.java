@@ -1,6 +1,6 @@
 package clientjava;
 
-
+import java.util.*;
 import java.util.Scanner;
 
 import org.json.JSONObject;
@@ -24,6 +24,7 @@ public class Client {
 	private String URL_CREATE = "http://localhost/INFO0503-PROJET-1/ServeurPHP/create.php";
 	private static int LOGIN_ACTION = 1;
 	private static int CREATE_ACTION =2;
+	private static int CREATESONDAGE_ACTION =2;
 
 	private String id = "";
 
@@ -33,11 +34,92 @@ public class Client {
 
 	public void setId(String id) { this.id = id; }
 
-    public String toString() { return "Client: "+this.id; }
+	public String toString() { return "Client: "+this.id; }
+	
+	/**
+	 * Genre une requete pour créé un sondage
+	 * @param saisieUtilisateur
+	 * @return la réponse du serveur PHP
+	 */
+
+	
+	public String requestCreateSondage(Scanner saisieUtilisateur){
+		/*
+		RecupSondage =
+		[
+			"question 1" =>
+			[ 
+				"rep 1 q 1" => ["jean-louis", "jean-jean"],
+				"rep 2 q 1" => ["jean-louis", "jean-jean"]
+			],
+			"question 2" =>
+			[
+				"rep 1 q 2" => ["jean-louis", "jean-jean"],
+				"rep 2 q 2" => ["jean-louis", "jean-jean", "toto"],
+				"rep 3 q 2" => ["jean-louis", "jean-jean", "toto"]
+			]
+		]
+		*/
+
+		//On peux utiliser HashMap à la place de Pair pour forcer le fait d'avoir des questions et reponses unique
+		//Pair<String, Pair<String, String[]>> RecupSondage = new Pair<String, Pair<String, String[]>>();
+		
+		//Pair marche pas....
+		HashMap<String, HashMap<String, Set<String>>> RecupSondage = new HashMap<String, HashMap<String, Set<String>>>();
+		String question = "";
+		HashMap<String, Set<String>> reponses = new HashMap<String, Set<String>>();
+		String currentReponse = "";
+		int MAX_Q = 10;
+		int MAX_R = 5;
+
+		System.out.print("Titre du sondage: ");
+		String RecupTitle = saisieUtilisateur.nextLine();
+
+		while(true){
+			System.out.print("Ajouter une question (q pour quitter): ");
+			question = saisieUtilisateur.nextLine();
+			if(!question.equals("q") && RecupSondage.size() < MAX_Q){
+				while(true){
+					System.out.print("("+question+") Ajouter une réponse (q pour quitter): ");
+					currentReponse = saisieUtilisateur.nextLine();
+					if(!currentReponse.equals("q") && reponses.size() < MAX_R){
+						reponses.put(currentReponse, null);
+					}else{
+						if(!currentReponse.equals("q")){
+							System.out.println("Vous ne pouvez pas ajouter davantage de reponses par question");
+						}
+						if(reponses.size() < 2){
+							System.out.println("Vous devez ajouter au moins 2 reponses par question");
+						}
+						break;
+					}
+				}
+				RecupSondage.put(question, reponses);
+				reponses = new HashMap<String, Set<String>>();
+
+			}
+			else{
+				if(RecupSondage.size() == 0){
+					System.out.println("Vous avez annulé la creation du sondage");
+				}	
+					break;
+			}
+		}
+
+		System.out.println("Sondage: "+RecupSondage.toString());
+		
+		/*JSONObject data = new JSONObject()
+			.put("action", CREATESONDAGE_ACTION)
+			.put("id", this.id)
+			.put("titre", RecupTitle)
+			.put("sondage", RecupSondage);
+		*/
+		return "";//makeRequest(data);
+	}
 
 	/**
 	 * Genere une requqte de login
-	 * @return une String de la réponse du serveur
+	 * @return la réponse du serveur d'authentification
 	 */
 	public String requestLogin(Scanner saisieUtilisateur){
 
@@ -54,6 +136,10 @@ public class Client {
 		return makeRequest(data);
 	}
 	
+	/**
+	 * Genere une requqte de creation de compte
+	 * @return la réponse du serveur d'authentification
+	 */
 	public String requestCreate(Scanner saisieUtilisateur){
 
 		System.out.print("login: ");
@@ -95,7 +181,7 @@ public class Client {
 			System.out.print("\n----======= MENU =======-----");
 			System.out.print( this.id == "" ?  "\n| ("+LOGIN_ACTION+") login" : "\n| Vous êtes connecté en tant que " +this.id);
 			System.out.print( this.id == "" ?  "\n| (2) Créer un compte" : "");
-			System.out.print("\n| (X) Creer Sondage");
+			System.out.print("\n| (3) Creer un sondage");
 			System.out.print("\n| (X) Voir le nom de ses Sondages");
 			System.out.print("\n| (X) Voir Reponse Sondage");
 			System.out.print("\n| (8) quitter");

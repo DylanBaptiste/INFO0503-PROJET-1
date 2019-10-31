@@ -96,26 +96,8 @@ public class Test {
 				}
 		
 				case "3":
-				{					System.out.println("Bienvenue sur l'interfaxe de Creation du Sondage ");
-					System.out.println("Veuillez donner un titre à votre sondage :");
-					//String RecupTitreSondage = saisieUtilisateur.nextLine();
-					
-					System.out.print("Combien avez-vous de question ?");
-					String RecupNbQuestion = saisieUtilisateur.nextLine();
-					int recupNbQuestion = Integer.parseInt(RecupNbQuestion);
-					String RecupQuestion = ("");	
-					String RecupReponse =("");
-					for (int i =1 ; i <= recupNbQuestion; i++) 
-					{
-						System.out.println("Entrez la question "+i + " n'oubliez pas le ? : ");
-						RecupQuestion =RecupQuestion + saisieUtilisateur.nextLine();
-						System.out.println(" Veullez entrez les reponses pour cette question en les separants par un @");
-						RecupReponse = RecupReponse +("|") + saisieUtilisateur.nextLine();
-						// On fait une concatenation je sais plus trop le mot pour exploser les question en plusieurs apres grace au ?
-					}
-					System.out.println(RecupQuestion);
-					System.out.println(RecupReponse);
-					System.out.print("Bienvenue sur l'interfaxe pour voir Sondage");
+				{	
+					client.requestCreateSondage(saisieUtilisateur);
 					break;
 				}
 				case "4": 
