@@ -79,11 +79,7 @@ class LoginHandler implements HttpHandler {
 
 		
 		if( passwordU.equals(localJsonUser.getString("password")) ){
-<<<<<<< HEAD:ServeurJava/LoginHandler.java
 			sendSuccess("login reussi", loginU);
-=======
-			sendSuccess("login reussi", localJsonUser.getInt("id"));
->>>>>>> f89e2b4209a4bf86ed84181b4ef3fc19a1f06afe:ClientJAVA/src/com/test/LoginHandler.java
 		}else{
 			System.out.println(localJsonUser.getString("password"));
 

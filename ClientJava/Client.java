@@ -45,7 +45,7 @@ public class Client {
 	
 	public String requestCreateSondage(Scanner saisieUtilisateur){
 		/*
-		RecupSondage =
+		sondageData =
 		[
 			"question 1" =>
 			[ 
@@ -62,10 +62,10 @@ public class Client {
 		*/
 
 		//On peux utiliser HashMap à la place de Pair pour forcer le fait d'avoir des questions et reponses unique
-		//Pair<String, Pair<String, String[]>> RecupSondage = new Pair<String, Pair<String, String[]>>();
+		//Pair<String, Pair<String, String[]>> sondageData = new Pair<String, Pair<String, String[]>>();
 		
 		//Pair marche pas....
-		HashMap<String, HashMap<String, Set<String>>> RecupSondage = new HashMap<String, HashMap<String, Set<String>>>();
+		HashMap<String, HashMap<String, Set<String>>> sondageData = new HashMap<String, HashMap<String, Set<String>>>();
 		String question = "";
 		HashMap<String, Set<String>> reponses = new HashMap<String, Set<String>>();
 		String currentReponse = "";
@@ -79,18 +79,24 @@ public class Client {
 		String RecupTitle = saisieUtilisateur.nextLine();
 
 		while(true){
-			System.out.print("QUESTION n"+RecupSondage.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
+
+			System.out.print("QUESTION n"+sondageData.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
+
 			question = saisieUtilisateur.nextLine();
-			if(!question.equals(quitCode) && !question.equals(abortCode) && RecupSondage.size() < MAX_Q){
+			if(!question.equals(quitCode) && !question.equals(abortCode) && sondageData.size() < MAX_Q){
 				while(true){
+
 					System.out.print("("+question+") REPONSE n"+reponses.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
+
 					currentReponse = saisieUtilisateur.nextLine();
-					if(!currentReponse.equals(quitCode) && !question.equals(abortCode) && reponses.size() < MAX_R){
+					
+					if( !currentReponse.equals(quitCode) && reponses.size() <= MAX_R){
 						//verification que currentReponse est unique ?
-						System.out.println(reponses.put(currentReponse, null));
+						reponses.put(currentReponse, null );
 					}else{
-						if(!currentReponse.equals(quitCode)){
-							System.out.println("Vous ne pouvez pas ajouter davantage de reponses par question");
+						
+						if(currentReponse.equals(quitCode)){
+							System.out.println("T'as quitté");
 							break;
 						}
 						if(currentReponse.equals(abortCode)){
@@ -100,16 +106,20 @@ public class Client {
 						}
 						if(reponses.size() < 2){
 							System.out.println("Vous devez ajouter au moins 2 reponses par question => "+question+" est supprimé de ce sondage");
-							RecupSondage.remove(question);
+							sondageData.remove(question);
+						}
+						if(reponses.size() >= MAX_R){
+							System.out.println("MAX REPONSES");
+							break;
 						}
 					}
 				}
-				RecupSondage.put(question, reponses);
+				sondageData.put(question, reponses);
 				reponses = new HashMap<String, Set<String>>();
 
 			}
 			else{
-				if(RecupSondage.size() == 0){
+				if(sondageData.size() == 0){
 					System.out.println("Aucun sondage créé");
 					isAbort = true;
 				}
@@ -121,7 +131,7 @@ public class Client {
 			}
 		}
 
-		System.out.println("Sondage: "+RecupSondage.toString());
+		System.out.println("Sondage.sondageData: "+sondageData.toString());
 		
 		
 		int isValid = -1;
@@ -139,13 +149,17 @@ public class Client {
 					break;
 			}
 		}
-		
+
+		//créé l'objet Sondage
+		Sondage s = new Sondage(this.id, RecupTitle, sondageData );
+		System.out.println(s.toJSON());
+
 		if(isValid == 1){
 			JSONObject data = new JSONObject()
 			.put("action", CREATESONDAGE_ACTION)
 			.put("id", this.id)
-			.put("titre", RecupTitle)
-			.put("sondage", RecupSondage);
+			//.put("sondage", s.toJSON)
+			;
 			
 			return makeRequest(data);
 		}else{

@@ -72,13 +72,8 @@ class api
 		if($password == "") 		return $this->error("auncun password donné");
 		if($confirmPassword == "") 	return $this->error("auncun confirmPassword donné");
 
-<<<<<<< HEAD
 		if($password != $confirmPassword){
 			return $this->error("Le mot de passe et mot de passe de confirmation ne sont pas les mêmes.");
-=======
-		if($password != confirmPassword){
-			return $this->error("Le mot de passe et la confirmation de mot de passe n'est pas la meme.");
->>>>>>> f89e2b4209a4bf86ed84181b4ef3fc19a1f06afe
 		}
 
 		$url = 'http://localhost:8081/create.html';
@@ -104,6 +99,42 @@ class api
 		
 	}
 
+	
+	public function createSondage($IDClient = "", $Titre = "", $sondageData = null){ 
+		if($IDClient == ""){
+			return $this->error("Vous n'êtes pas identifié");
+		}
+
+		$Titre = trim($Titre);
+		if($Titre == ""){
+			return $this->error("Choisissez un titre pour le sondage");
+		}
+		if($sondageData == null){
+			return $this->error("Aucun sondage envoyé");
+		}
+
+		$sondage = new Sondage($IDClient, $Titre, $sondageData);
+
+		try{
+			$formatedTitre = preg_replace('/\s+/',"-",$Titre);
+			echo $formatedTitre;
+			$file = "sondages/".$IDClient."/".$formatedTitre.".json";
+			
+			if(!file_exists(dirname($file)))
+				mkdir(dirname($file), 0777, true);
+			$file = fopen("sondages/".$IDClient."/".$formatedTitre.".json", "w");
+			fwrite($file, $sondage->toJSON());
+		}
+		catch(Exception $e){
+			return $this->error("Erreur d'ecriture PHP");
+		}
+		
+
+
+		
+		
+	}
+
 	/**
 	 * @param $identifiant string identifiant unique de l'utilisateur
 	 * @param $id string identifiant du sondage
@@ -118,3 +149,58 @@ class api
 		return json_encode(array("error" => "voter pas encore implementé"));
 	}
 }
+
+class Sondage{
+	private $administrateur = "";
+	private $titre = "";
+	private $sondageData = null;
+
+	function __construct($l, $t, $Q) {
+		$this->administrateur = $l;
+		$this->titre = $t;
+		$this->sondageData = $Q;
+	}
+	
+	public function toJSON(){
+		return json_encode(
+			array(
+				"administrateur" => $this->administrateur,
+				"titre" => $this->titre,
+				"sondageData" => $this->sondageData
+			)
+		);
+	}
+
+	public function nbQuestions(){
+		return count($this->sondageData);
+	}
+
+	/*public function nbVoteQuestionByIndex($index){
+		return count(array_values($this->sondageData)[$index]);
+	}*/
+	public function nbVoteReponseByIndex($indexQuestion, $indexReponse){
+		$question = array_values($this->sondageData)[$indexQuestion];
+		$reponse = array_values($question)[$indexReponse];
+		return count($reponse);
+	}
+
+}
+/*
+{
+	"administrateur": "toto",
+	"titre": "le titre",
+	"sondageData": {
+		"question1": {
+			"reponse1": ["toto1", "toto2"],
+			"reponse1": ["toto1", "toto2"],
+			"reponse1": ["toto1", "toto2"]
+		},
+		"question2": {
+			"reponse1": ["toto1", "toto2"],
+			"reponse1": ["toto1", "toto2"]
+		}
+	}
+}
+*/
+
+?>

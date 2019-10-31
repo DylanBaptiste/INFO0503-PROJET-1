@@ -97,7 +97,8 @@ public class Test {
 		
 				case "3":
 				{	
-					client.requestCreateSondage(saisieUtilisateur);
+					resultRequest = client.requestCreateSondage(saisieUtilisateur);
+					resultRequest = manageResult(resultRequest);
 					break;
 				}
 				case "4": 
