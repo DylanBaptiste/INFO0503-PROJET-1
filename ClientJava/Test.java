@@ -71,7 +71,21 @@ public class Test {
 					
 					try{
 						JSONObject jsonRequest = new JSONObject(resultRequest);
+<<<<<<< HEAD:ClientJava/Test.java
 						client.setId(getKey(jsonRequest, "id"));
+=======
+						String success = getKey(jsonRequest, "success");//"";//jsonRequest.getString("success");
+						String error   = getKey(jsonRequest, "error");
+						
+						if(success != ""){
+							resultRequest = "Requete reussi: "+ success;
+							client.setId(getKey(jsonRequest, "id"));
+						}else{
+							resultRequest = "Une erreur est survenu: " + error;
+						}
+					}catch(JSONException e){
+						resultRequest += "\nimpossible de parser la reponse";
+>>>>>>> f89e2b4209a4bf86ed84181b4ef3fc19a1f06afe:ClientJAVA/src/com/test/Test.java
 					}
 					catch(Exception e){}
 

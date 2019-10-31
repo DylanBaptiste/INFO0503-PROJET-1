@@ -72,8 +72,13 @@ class api
 		if($password == "") 		return $this->error("auncun password donné");
 		if($confirmPassword == "") 	return $this->error("auncun confirmPassword donné");
 
+<<<<<<< HEAD
 		if($password != $confirmPassword){
 			return $this->error("Le mot de passe et mot de passe de confirmation ne sont pas les mêmes.");
+=======
+		if($password != confirmPassword){
+			return $this->error("Le mot de passe et la confirmation de mot de passe n'est pas la meme.");
+>>>>>>> f89e2b4209a4bf86ed84181b4ef3fc19a1f06afe
 		}
 
 		$url = 'http://localhost:8081/create.html';
