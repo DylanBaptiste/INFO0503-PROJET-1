@@ -71,27 +71,37 @@ public class Client {
 		String currentReponse = "";
 		int MAX_Q = 10;
 		int MAX_R = 5;
+		String quitCode = "q";
+		String abortCode = "a";
+		boolean isAbort = false;
 
 		System.out.print("Titre du sondage: ");
 		String RecupTitle = saisieUtilisateur.nextLine();
 
 		while(true){
-			System.out.print("Ajouter une question (q pour quitter): ");
+			System.out.print("QUESTION n"+RecupSondage.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
 			question = saisieUtilisateur.nextLine();
-			if(!question.equals("q") && RecupSondage.size() < MAX_Q){
+			if(!question.equals(quitCode) && !question.equals(abortCode) && RecupSondage.size() < MAX_Q){
 				while(true){
-					System.out.print("("+question+") Ajouter une réponse (q pour quitter): ");
+					System.out.print("("+question+") REPONSE n"+reponses.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
 					currentReponse = saisieUtilisateur.nextLine();
-					if(!currentReponse.equals("q") && reponses.size() < MAX_R){
-						reponses.put(currentReponse, null);
+					if(!currentReponse.equals(quitCode) && !question.equals(abortCode) && reponses.size() < MAX_R){
+						//verification que currentReponse est unique ?
+						System.out.println(reponses.put(currentReponse, null));
 					}else{
-						if(!currentReponse.equals("q")){
+						if(!currentReponse.equals(quitCode)){
 							System.out.println("Vous ne pouvez pas ajouter davantage de reponses par question");
+							break;
+						}
+						if(currentReponse.equals(abortCode)){
+							System.out.println("Vous avez annulé");
+							isAbort = true;
+							break;
 						}
 						if(reponses.size() < 2){
-							System.out.println("Vous devez ajouter au moins 2 reponses par question");
+							System.out.println("Vous devez ajouter au moins 2 reponses par question => "+question+" est supprimé de ce sondage");
+							RecupSondage.remove(question);
 						}
-						break;
 					}
 				}
 				RecupSondage.put(question, reponses);
@@ -100,21 +110,47 @@ public class Client {
 			}
 			else{
 				if(RecupSondage.size() == 0){
-					System.out.println("Vous avez annulé la creation du sondage");
-				}	
-					break;
+					System.out.println("Aucun sondage créé");
+					isAbort = true;
+				}
+				if(currentReponse.equals(abortCode)){
+					System.out.println("Vous avez annulé");
+					isAbort = true;
+				}
+				break;
 			}
 		}
 
 		System.out.println("Sondage: "+RecupSondage.toString());
 		
-		/*JSONObject data = new JSONObject()
+		
+		int isValid = -1;
+		String valid = "";
+
+		while(isValid == -1 && !isAbort){
+			System.out.print("\nValider ce sondage ? (y/n) ");
+			valid = saisieUtilisateur.nextLine();
+			switch(valid){
+				case "y": case "yes": case "oui": isValid = 1;
+					break;
+				case "n": case "no": case "non": isValid = 0;
+					break;
+				default:
+					break;
+			}
+		}
+		
+		if(isValid == 1){
+			JSONObject data = new JSONObject()
 			.put("action", CREATESONDAGE_ACTION)
 			.put("id", this.id)
 			.put("titre", RecupTitle)
 			.put("sondage", RecupSondage);
-		*/
-		return "";//makeRequest(data);
+			
+			return makeRequest(data);
+		}else{
+			return "Création annulé";
+		}
 	}
 
 	/**
