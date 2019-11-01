@@ -16,6 +16,27 @@ public class Sondage {
     	this.administrateur = administrateur;
         this.titre = titre;
     }
+
+    //{"administrateur":"login","titre":"titre","sondageData":[{"question 2":{"reponse 4":["toto"],"reponse 3":[]}},{"question 1":{"reponse 2":["toto","titi"],"reponse 1":["titi","tata"]}}]}
+    public Sondage(JSONObject json) {
+        
+        if( json.has("administrateur") &&  json.has("titre") &&  json.has("sondageData")){
+            this.administrateur = json.getString("administrateur");
+            this.titre          = json.getString("titre");
+            
+            
+            this.sondageData = new HashSet<Question>();
+            JSONArray jsonArray = json.getJSONArray("sondageData");
+            if (jsonArray != null) { 
+                int len = jsonArray.length();
+                for (int i = 0; i < len ; i++){ 
+                    this.ajouterQuestion(new Question(new JSONObject(jsonArray.get(i).toString())));
+                } 
+            }
+        }
+    	
+    }
+
     
     public void ajouterQuestion(Question question) {
     	sondageData.add(question);
@@ -23,6 +44,10 @@ public class Sondage {
 
     public int size() {
     	return sondageData.size();
+    }
+
+    public Set<Question> getQuestions() {
+    	return this.sondageData;
     }
     
     /*public Question getQuestion(int i) {
@@ -48,6 +73,8 @@ public class Sondage {
             .put("titre", this.titre)
             .put("sondageData", tmpobj );
     }
+
+
 
     @Override
 	public String toString() {

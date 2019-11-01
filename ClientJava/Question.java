@@ -1,7 +1,9 @@
 package clientjava;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -20,6 +22,36 @@ public class Question {
 	    
 	public Question(String quest) {
         this.quest = quest;
+    }
+
+    //"{\"administrateur\":\"login\",\"titre\":\"titre\",\"sondageData\":[{\"question 2\":{\"reponse 4\":[\"1\"],\"reponse 3\":[]}},{\"question 1\":{\"reponse 2\":[\"2\",\"3\"],\"reponse 1\":[\"4\",\"5\"]}}]}"
+    public Question(JSONObject json) {
+
+        this.reponses = new HashSet<Reponse>();
+        String questionString = json.names().getString(0);
+        this.quest = questionString;
+
+        String reponseStr = "";
+        for(int i = 0; i < json.getJSONObject(questionString).length(); i++ ){
+            reponseStr = json.getJSONObject(questionString).names().getString(i);
+            this.ajouterReponse(new Reponse(reponseStr, json.getJSONObject(questionString).getJSONArray(reponseStr)));
+        }
+        
+	
+    }
+
+    public  Set<Reponse> getReponses(){
+        return this.reponses;
+    }
+
+    public void voter(int i, String login){
+        Reponse[] r = this.reponses.toArray(new Reponse[this.reponses.size()]);
+        r[i].voter(login);
+        this.reponses = new HashSet<Reponse>(Arrays.asList(r));
+    }
+
+    public  String getQuestion(){
+        return this.quest;
     }
     
     public void ajouterReponse(Reponse value) {

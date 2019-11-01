@@ -131,6 +131,37 @@ class api
 		
 	}
 
+
+	public function getSondageFile($login = "", $titre = ""){ 
+		
+		if($login == ""){
+			return $this->error("Choisisser un admin");
+		}
+		if($this->folder_exist("sondages/".$login) == false){
+			return $this->error("Cette administrateur n'existe pas");
+		}
+
+		$titre = trim($titre);
+		$formatedtitre = preg_replace('/\s+/',"-",$titre);
+
+		if($formatedtitre == ""){
+			return $this->error("Choisissez un titre pour le sondage");
+		}
+
+		$filePath = "sondages/".$login."/".$formatedtitre.".json";
+		if(file_exists($filePath) === false){
+			return $this->error("Ce sondage existe pas");
+		}
+		$file = @fopen($filePath, "r");
+		if($file === false){
+			return $this->error("Ce sondage existe pas");
+		}
+
+		return fread($file, filesize($filePath));
+
+
+	}
+
 	private function writeSondage($login, $titre, $sondage){
 		try{
 			$formatedtitre = preg_replace('/\s+/',"-",$titre);
@@ -147,49 +178,30 @@ class api
 		}
 	}
 
-	/**
-	 * @param $identifiant string identifiant unique de l'utilisateur
-	 * @param $id string identifiant du sondage
-	 * @param $rep string indice de la reponse
-	 * @return JSON encodé
-	 */
-	public function voter($login = "", $administrateur = "", $sondageName = "", $indexQ = "", $indexR= ""){ 
-		/*
-		-on va chercher le fichier de sondage $id
-		-on on ajoute $identifiant dans l'indice $rep si il est pas deja present
-		*/
+	public function voter($administrateur= "", $titre = "", $sondageData = ""){ 
+
 		if($this->folder_exist("sondages/".$administrateur) == false){
 			return $this->error("Cette administrateur n'existe pas");
 		}
 
-		$filePath = "sondages/".$administrateur."/".$sondageName.".json";
+		$filePath = "sondages/".$administrateur."/".$titre.".json";
 		if( !(file_exists($filePath)) ){
 			return $this->error("Ce sondage n'existe pas");
 		}
 
-		$sondage = json_decode(file_get_contents($filePath), true);
-
-		$sondage = new Sondage($sondage["administrateur"], $sondage["titre"], $sondage["sondageData"]);
-		
-		//	echo $sondage->toJSON();
-		//	echo "</br></br>";
-
-		$ok = $sondage->voter($login, $indexQ, $indexR);
-		
-		
-		if($ok == false){
-			return $this->error("Cette rponse n'existe pas");
-		}
-		if($ok !== true){
-			return $this->error($ok);
+		if($sondageData == ""){
+			return $this->error("Aucun vote(s) envoyé");
 		}
 
-		//	echo $sondage->toJSON();
-		//	echo "</br></br>";
+		$sondage = new Sondage($administrateur, $titre, $sondageData);
 
-		$ret = $this->writeSondage($administrateur, $sondageName, $sondage);
+		if($sondage->isValid() == false){
+			return $this->error("Le sondage n'est pas valide");
+		}
+
+		$ret = $this->writeSondage($administrateur, $titre, $sondage);
 		if($ret == true){
-			return $this->success("Votre vote est enregistré");
+			return $this->success("Votes enregistrés");
 		}else{
 			return $ret;
 		}

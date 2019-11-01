@@ -33,6 +33,67 @@ public class Client {
 	public void setId(String id) { this.id = id; }
 
 	public String toString() { return "Client: "+this.id; }
+
+	public String requestVoter(Scanner saisieUtilisateur){
+
+		if(this.id.equals("")){
+			return "Vous n'etes pas connecté";
+		}
+
+		String sondageString = requestGetSondage(saisieUtilisateur);
+		
+		JSONObject json = null;
+        try{
+            json = new JSONObject(sondageString);
+        }
+        catch(Exception e){
+            return "ce sondage à un probleme";
+		}
+
+		if(json.has("error")){
+			return json.toString();
+		}
+
+		int i = 0;
+		int j = 0;
+		int input = -1;
+		Sondage sondage = new Sondage(json);
+
+		System.out.println(sondage.size());
+
+		for (Question q : sondage.getQuestions() ) {
+			//while(input < 0 || input > q.size() ){
+				System.out.println("("+(i++)+") - "+q.getQuestion());
+				for (Reponse r : q.getReponses() ) {
+					System.out.println("\t("+(j++)+") - "+r.getrep());
+				}
+				j = 0;
+				System.out.println("Vote: ");
+				input = Integer.parseInt(saisieUtilisateur.nextLine());
+				if(input >= 0 && input <= q.size() ){
+					q.voter(input, this.id);
+				}
+			//}
+		}
+		
+		JSONObject data = sondage.toJSON().put("action", 5);
+		return makeRequest(data);
+	}
+
+	private String requestGetSondage(Scanner saisieUtilisateur){
+		System.out.print("Administrateur du sondage: ");
+		String admin = saisieUtilisateur.nextLine();
+
+		System.out.print("titre du sondage: ");
+		String titre = saisieUtilisateur.nextLine();
+
+		JSONObject data = new JSONObject()
+			.put("action", 10)
+			.put("admin", admin)
+			.put("titre", titre)
+			;
+		return makeRequest(data);
+	}
 	
 	/**
 	 * Genre une requete pour créé un sondage
@@ -41,47 +102,8 @@ public class Client {
 	 */
 	public String requestCreateSondage(Scanner saisieUtilisateur){
 
-		/*
-		Question q1 = new Question("question 1");
-		Question q2 = new Question("question 2");
-		
-		Reponse r1 = new Reponse("reponse 1");
-		Reponse r2 = new Reponse("reponse 2");
-		Reponse r3 = new Reponse("reponse 3");
-		Reponse r4 = new Reponse("reponse 4");
-
-		q1.ajouterReponse(r1);
-		q1.ajouterReponse(r2);
-
-		q2.ajouterReponse(r3);
-		q2.ajouterReponse(r4);
-
-		r4.voter("toto");
-		
-		r2.voter("toto");
-		r2.voter("titi");
-
-		r1.voter("titi");
-		r1.voter("tata");
-
-		Sondage s = new Sondage("login", "titre");
-		s.ajouterQuestion(q1);
-		s.ajouterQuestion(q2);
-		
-		System.out.println(r1.toJSON());
-		System.out.println(q1.toJSON());
-
-		System.out.println(s.toString());
-		System.out.println(s.toJSON());
-		
-		
-		JSONObject data = s.toJSON().put("action", 3); 
-		System.out.println(data.toString());
-		return makeRequest(data);
-		*/
-
-		int MAX_Q = 3;
-		int MAX_R = 2;
+		int MAX_Q = 10;
+		int MAX_R = 10;
 		String quitCode = "q";
 		String abortCode = "a";
 		boolean isAbort = false;
@@ -155,12 +177,10 @@ public class Client {
 		
 		
 		int isValid = -1;
-		String valid = "";
 
 		while(isValid == -1 && !isAbort){
-			System.out.print("\nValider ce sondage ? (y/n) ");
-			valid = saisieUtilisateur.nextLine();
-			switch(valid){
+			System.out.print("\nValider ce sondage (y/n) ? ");
+			switch(saisieUtilisateur.nextLine()){
 				case "y": case "yes": case "oui": isValid = 1;
 					break;
 				case "n": case "no": case "non": isValid = 0;
@@ -246,7 +266,8 @@ public class Client {
 		System.out.print( this.id == "" ?  "\n| (2) Créer un compte" : "");
 		System.out.print("\n| (3) Creer un sondage");
 		System.out.print("\n| (4) Voir les sondages d'un admin");
-		System.out.print("\n| (X)");
+		System.out.print("\n| (5) Voter");
+		System.out.print("\n| (6) ------");
 		System.out.print("\n| (8) quitter");
 		System.out.print( this.id != "" ?  "\n| (9) Se déconnecter" : "");
 		System.out.print("\n----======= **** =======-----\n\n");  

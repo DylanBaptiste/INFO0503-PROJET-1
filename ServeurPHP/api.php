@@ -38,6 +38,18 @@ if( isset($data) )
                 else
                     echo $api->error("aucun nom d'asmin envoyé");
                 break;
+            case "5":
+                if( isset($data['login']) && isset($data['titre']) && isset($data['sondageData']) )
+                    echo $api->voter($data['login'], $data['titre'], $data['sondageData']);
+                else
+                    echo $api->error("Informations pour voter non completes");
+                break;
+            case "10":
+                if( isset($data['admin']) && isset($data['titre']))
+                    echo $api->getSondageFile($data['admin'], $data['titre']);
+                else
+                    echo $api->error("Informations pour récupéré non completes");
+                break;
 
             default:
                 echo $api->error("Cette action n'existe pas");

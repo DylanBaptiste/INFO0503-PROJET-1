@@ -40,7 +40,7 @@ public class Test {
 				resultRequest = "Erreur: "+ error;
 			}
 		}catch(JSONException e){
-			resultRequest += "\nimpossible de parser la reponse !";
+			resultRequest += "";
 		}
 		return resultRequest;
 	}
@@ -113,6 +113,14 @@ public class Test {
 							}
 						}
 					}catch(JSONException e){}
+					break;
+				}
+				case "5": 
+				{
+					//voter à un sondage
+					String tmpresultRequest = client.requestVoter(saisieUtilisateur);
+					resultRequest = manageResult(tmpresultRequest);
+					
 					break;
 				}
 				case "8": 
