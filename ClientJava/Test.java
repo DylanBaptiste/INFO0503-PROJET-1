@@ -35,12 +35,12 @@ public class Test {
 			String error   = getKey(jsonRequest, "error");
 			
 			if(success != ""){
-				resultRequest = "\033[32m"+ success;
+				resultRequest = "Succes: "+ success;
 			}else{
-				resultRequest = "\033[31m"+ error;
+				resultRequest = "Erreur: "+ error;
 			}
 		}catch(JSONException e){
-			resultRequest += "\nimpossible de parser la reponse";
+			resultRequest += "\nimpossible de parser la reponse !";
 		}
 		return resultRequest;
 	}
@@ -69,7 +69,6 @@ public class Test {
 				{
 					resultRequest = client.requestLogin(saisieUtilisateur);
 					
-					
 					try{
 						JSONObject jsonRequest = new JSONObject(resultRequest);
 						client.setId(getKey(jsonRequest, "id"));
@@ -83,7 +82,6 @@ public class Test {
 				case "2": {
 
 					resultRequest = client.requestCreate(saisieUtilisateur);
-					
 
 					try{
 						JSONObject jsonRequest = new JSONObject(resultRequest);

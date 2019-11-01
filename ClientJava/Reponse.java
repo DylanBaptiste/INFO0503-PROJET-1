@@ -37,7 +37,7 @@ public class Reponse {
 
 	@Override
 	public String toString() {
-		return this.rep+" => "+this.SetUser.toString();
+		return this.rep;//+" => "+this.SetUser.toString();
 	}
 	
 }

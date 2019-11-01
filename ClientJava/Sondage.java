@@ -8,14 +8,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Sondage {
-	private String IDClient;
-	private String Titre;
+	private String administrateur;
+	private String titre;
     Set<Question> sondageData = new HashSet<Question>();
-
     
-    public Sondage(String IDClient,String Titre) {
-    	this.IDClient = IDClient;
-        this.Titre = Titre;
+    public Sondage(String administrateur,String titre) {
+    	this.administrateur = administrateur;
+        this.titre = titre;
     }
     
     public void ajouterQuestion(Question question) {
@@ -44,18 +43,18 @@ public class Sondage {
             tmpobj.put(question.toJSON());
         }
 
-
         return new JSONObject()
-            .put("login", this.IDClient)
-            .put("titre", this.Titre)
+            .put("login", this.administrateur)
+            .put("titre", this.titre)
             .put("sondageData", tmpobj );
     }
 
     @Override
 	public String toString() {
-        String str = "";
+        int i = 0;
+        String str = this.titre+":\n";
         for (Question question : this.sondageData) {
-            str += "\n"+question.toString();
+            str += "\n"+(++i)+"- "+question.toString();
         }
         return str;
 	}

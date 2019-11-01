@@ -53,9 +53,10 @@ public class Question {
 
     @Override
 	public String toString() {
-        String str = this.quest+"=>";
+        int i = 0;
+        String str = this.quest;
         for (Reponse reponse : this.reponses) {
-            str += "\n\t"+reponse.toString();
+            str += "\n\t"+(++i)+"- "+reponse.toString();
         }
         return str;
 	}

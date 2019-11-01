@@ -80,8 +80,8 @@ public class Client {
 		return makeRequest(data);
 		*/
 
-		int MAX_Q = 10;
-		int MAX_R = 5;
+		int MAX_Q = 3;
+		int MAX_R = 2;
 		String quitCode = "q";
 		String abortCode = "a";
 		boolean isAbort = false;
@@ -100,9 +100,10 @@ public class Client {
 			input = saisieUtilisateur.nextLine();
 			
 			currentQuestion = new Question(input);
-			sondage.ajouterQuestion(currentQuestion);
-
+			
 			if(!input.equals(quitCode) && !input.equals(abortCode) && sondage.size() < MAX_Q){
+			
+				sondage.ajouterQuestion(currentQuestion);
 				
 				while(true){
 
@@ -110,7 +111,7 @@ public class Client {
 
 					input = saisieUtilisateur.nextLine();
 					
-					if( !input.equals(quitCode) && !input.equals(abortCode) && currentQuestion.size() <= MAX_R){
+					if( !input.equals(quitCode) && !input.equals(abortCode) && currentQuestion.size() < MAX_R){
 						currentReponse = new Reponse(input);
 						currentQuestion.ajouterReponse(currentReponse);
 					}else{
@@ -150,7 +151,7 @@ public class Client {
 			}
 		}
 
-		System.out.println("Sondage.sondageData:\n"+sondage.toString());
+		System.out.println("Voici votre sondage: "+sondage.toString());
 		
 		
 		int isValid = -1;
@@ -169,16 +170,9 @@ public class Client {
 			}
 		}
 
-		//créé l'objet Sondage
-		System.out.println(sondage.toJSON());
-
 		if(isValid == 1){
 			JSONObject data = sondage.toJSON().put("action", CREATESONDAGE_ACTION);
-
-			System.out.println(data.toString());
-			
 			return makeRequest(data);
-
 		}else{
 			return "Création annulé";
 		}
@@ -245,7 +239,7 @@ public class Client {
 	 */
 	public void displayMenu(String lastResultRequest){
 		
-		System.out.println('\n'+lastResultRequest+"\033[0m");
+		System.out.println('\n'+lastResultRequest);
 
 		System.out.print("\n----======= MENU =======-----");
 		System.out.print( this.id == "" ?  "\n| ("+LOGIN_ACTION+") login" : "\n| Vous êtes connecté en tant que " +this.id);
