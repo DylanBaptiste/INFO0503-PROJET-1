@@ -1,74 +1,60 @@
 package clientjava;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+/*
+"question 1" =>
+    [ 
+        "rep 1 q 1" => ["jean-louis", "jean-jean"],
+        "rep 2 q 1" => ["jean-louis", "jean-jean"]
+    ]
+*/
 public class Question {
-		 
-	    private static int compteur = 0;// ??
-	    private String quest;
-	    private HashMap<Integer,Reponse> reponse;
+   public Set<Reponse> reponses = new HashSet<Reponse>();
+   public String quest;
 	    
 	public Question(String quest) {
-		 reponse = new HashMap<Integer,Reponse>();
-		 this.quest = quest;
-	}
-    public int ajouterReponse(Reponse r) {
-        reponse.put(compteur, r);
-        return compteur++;
+        this.quest = quest;
     }
-   public Reponse getLivre(int i) {
-        Reponse resultat = null;
-        
-        if(reponse.containsKey(i)) {
-            resultat = reponse.get(i);
+    
+    public void ajouterReponse(Reponse value) {
+        this.reponses.add(value);
+    }
+
+    public JSONObject toJSON(){
+        JSONObject tmpobj = new JSONObject();
+        for (Reponse reponse : reponses) {
+            tmpobj.put(reponse.rep, new JSONArray(reponse.SetUser));
         }
-        
-        return resultat;
+        return new JSONObject().put(quest, tmpobj);
     }
    
-   // gneugneu c faux la 
-   public JSONObject toJSON(){
-       JSONObject objet = new JSONObject();
-       objet.put("quest", quest);
-       objet.put("reponse", this.reponse);
-       return objet;
-   }
-   
-   public static Question deserializeQuestion(JSONObject json) {
-       JSONObject array = json.getJSONObject("reponse");
-       String quest =  json.getString("question");
+    /*public static Question deserializeQuestion(JSONObject json) {
+        JSONObject array = json.getJSONObject("reponse");
+        String quest =  json.getString("question");
 
-       Question question = new Question(quest);
-       
-       for(int i = 0; i < array.length(); i++){
-           question.ajouterReponse(Reponse.deserializeReponse(array.getJSONObject(Integer.toString(i))));
-       }
-           
-       return question;
-   }
+        Question question = new Question(quest);
+        
+        for(int i = 0; i < array.length(); i++){
+            question.ajouterReponse(Reponse.deserializeReponse(array.getJSONObject(Integer.toString(i))));
+        }
+            
+        return question;
+    }*/
 
-   
-   
-   public static int getCompteur() {
-	return compteur;
-}
-   public static void setCompteur(int compteur) {
-	Question.compteur = compteur;
-}
-   public String getQuestion() {
-	return quest;
-}
-   public void setQuestion(String quest) {
-	this.quest = quest;
-}
-   public HashMap<Integer, Reponse> getReponse() {
-	return reponse;
-}
-   public void setReponse(HashMap<Integer, Reponse> reponse) {
-	this.reponse = reponse;
-}
+    @Override
+	public String toString() {
+        String str = this.quest+"=>";
+        for (Reponse reponse : this.reponses) {
+            str += "\n\t"+reponse.toString();
+        }
+        return str;
+	}
 
 
 }

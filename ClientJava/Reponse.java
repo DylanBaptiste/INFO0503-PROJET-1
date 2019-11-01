@@ -1,34 +1,43 @@
 package clientjava;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+/*
+ "rep 1 q 1" => ["jean-louis", "jean-jean"]
+*/
 public class Reponse {
-	private String reponse;
-	//tab de reponse plutot mais tql cazlme toi
+	public String rep;
+	public Set<String> SetUser = new HashSet<String>();
 
-	public Reponse(String reponse) {
-		this.reponse = reponse;
+	public Reponse(String str) {
+		this.rep = str;
+	}
+
+	public Set<String> getReponse() {
+		return this.SetUser;
+	}
+
+	public void voter(String login) {
+		this.SetUser.add(login);
+	}
+
+	public JSONObject toJSON() {
+		return new JSONObject().put(this.rep, new JSONArray(this.SetUser));
 	}
 	
-	@Override
-	public String toString() {
-		return "Reponse [reponse=" + reponse + "]";
-	}
-
-	public String getReponse() {
-		return reponse;
-	}
-
-	public void setReponse(String reponse) {
-		this.reponse = reponse;
-	}
-	public JSONObject toJSON() {
-		return new JSONObject(this);
-	}
-    public static Reponse deserializeReponse(JSONObject json) {
+	/*public static Reponse deserializeReponse(JSONObject json) {
         String reponse =  json.getString("dreponse");
 
         return new Reponse(reponse);
-    }
+	}*/
+
+	@Override
+	public String toString() {
+		return this.rep+" => "+this.SetUser.toString();
+	}
 	
 }

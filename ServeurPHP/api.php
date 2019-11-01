@@ -100,30 +100,34 @@ class api
 	}
 
 	
-	public function createSondage($IDClient = "", $Titre = "", $sondageData = null){ 
-		if($IDClient == ""){
+	public function createSondage($login = "", $titre = "", $sondageData = null){ 
+		if($login == ""){
 			return $this->error("Vous n'êtes pas identifié");
 		}
 
-		$Titre = trim($Titre);
-		if($Titre == ""){
+		$titre = trim($titre);
+		if($titre == ""){
 			return $this->error("Choisissez un titre pour le sondage");
 		}
 		if($sondageData == null){
 			return $this->error("Aucun sondage envoyé");
 		}
 
-		$sondage = new Sondage($IDClient, $Titre, $sondageData);
+		$sondage = new Sondage($login, $titre, $sondageData);
+
+		if($sondage->isValid() == false){
+			return $this->error("Le sondage n'est pas valide");
+		}
 
 		try{
-			$formatedTitre = preg_replace('/\s+/',"-",$Titre);
-			echo $formatedTitre;
-			$file = "sondages/".$IDClient."/".$formatedTitre.".json";
+			$formatedtitre = preg_replace('/\s+/',"-",$titre);
+			$file = "sondages/".$login."/".$formatedtitre.".json";
 			
 			if(!file_exists(dirname($file)))
 				mkdir(dirname($file), 0777, true);
-			$file = fopen("sondages/".$IDClient."/".$formatedTitre.".json", "w");
+			$file = fopen("sondages/".$login."/".$formatedtitre.".json", "w");
 			fwrite($file, $sondage->toJSON());
+			return $this->success("Votre sondage est enregistré");
 		}
 		catch(Exception $e){
 			return $this->error("Erreur d'ecriture PHP");
@@ -141,14 +145,36 @@ class api
 	 * @param $rep string indice de la reponse
 	 * @return JSON encodé
 	 */
-	public function voter($identifiant, $id, $rep){ 
+	public function voter($login = "", $administrateur = "", $sondageName = ""){ 
 		/*
 		-on va chercher le fichier de sondage $id
 		-on on ajoute $identifiant dans l'indice $rep si il est pas deja present
 		*/
-		return json_encode(array("error" => "voter pas encore implementé"));
+		if(folder_exist("sondages/".$administrateur) == false){
+			return $this->error("Cette administrateur n'existe pas");
+		}
+
+		$filePath = "sondages/".$administrateur."/".$sondageName."/.json";
+
+		if( !(file_exists($filePath)) ){
+			eturn $this->error("Ce sondage n'existe pas");
+		}
+
+		$sondage = json_decode(file_get_contents($filePath));
+		$sondage = new Sondage($sondage["login"], $sondage["titre"], $sondage["sondageData"]));
+		//$sondage->voter()
+
+
+	}
+
+	private function folder_exist($folder)
+	{
+		$path = realpath($folder);
+		return ($path !== false && is_dir($path)) ? $path : false;
 	}
 }
+
+
 
 class Sondage{
 	private $administrateur = "";
@@ -159,6 +185,10 @@ class Sondage{
 		$this->administrateur = $l;
 		$this->titre = $t;
 		$this->sondageData = $Q;
+	}
+
+	public function isValid(){
+		return is_array($this->sondageData);
 	}
 	
 	public function toJSON(){

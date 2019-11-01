@@ -24,6 +24,12 @@ if( isset($data) )
                 else
                     echo $api->error("Données de creation non fournis");
                 break;
+            case "3":
+                if( isset($data['login']) && isset($data['titre']) && isset($data['sondageData']) )
+                    echo $api->createSondage($data['login'], $data['titre'], $data['sondageData']);
+                else
+                    echo $api->error("Données de creation de sondage non fournis");
+                break;
 
             default:
                 echo $api->error("Cette action n'existe pas");

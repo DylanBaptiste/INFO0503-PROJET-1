@@ -1,7 +1,6 @@
 package clientjava;
 
 import java.util.*;
-import java.util.Scanner;
 
 import org.json.JSONObject;
 
@@ -44,6 +43,45 @@ public class Client {
 
 	
 	public String requestCreateSondage(Scanner saisieUtilisateur){
+
+		Question q1 = new Question("question 1");
+		Question q2 = new Question("question 2");
+		
+		Reponse r1 = new Reponse("reponse 1");
+		Reponse r2 = new Reponse("reponse 2");
+		Reponse r3 = new Reponse("reponse 3");
+		Reponse r4 = new Reponse("reponse 4");
+
+		q1.ajouterReponse(r1);
+		q1.ajouterReponse(r2);
+
+		q2.ajouterReponse(r3);
+		q2.ajouterReponse(r4);
+
+		r4.voter("toto");
+		
+		r2.voter("toto");
+		r2.voter("titi");
+
+		r1.voter("titi");
+		r1.voter("tata");
+
+		Sondage s = new Sondage("login", "titre");
+		s.ajouterQuestion(q1);
+		s.ajouterQuestion(q2);
+		
+		System.out.println(r1.toJSON());
+		System.out.println(q1.toJSON());
+
+		System.out.println(s.toString());
+		System.out.println(s.toJSON());
+		
+		
+		JSONObject data = s.toJSON().put("action", 3); 
+		System.out.println(data.toString());
+		return makeRequest(data);
+		
+
 		/*
 		sondageData =
 		[
@@ -65,7 +103,7 @@ public class Client {
 		//Pair<String, Pair<String, String[]>> sondageData = new Pair<String, Pair<String, String[]>>();
 		
 		//Pair marche pas....
-		HashMap<String, HashMap<String, Set<String>>> sondageData = new HashMap<String, HashMap<String, Set<String>>>();
+		/*HashMap<String, HashMap<String, Set<String>>> sondageData = new HashMap<String, HashMap<String, Set<String>>>();
 		String question = "";
 		HashMap<String, Set<String>> reponses = new HashMap<String, Set<String>>();
 		String currentReponse = "";
@@ -151,7 +189,7 @@ public class Client {
 		}
 
 		//créé l'objet Sondage
-		Sondage s = new Sondage(this.id, RecupTitle, sondageData );
+		Sondage s = new Sondage(this.id, RecupTitle, null );
 		System.out.println(s.toJSON());
 
 		if(isValid == 1){
@@ -164,8 +202,10 @@ public class Client {
 			return makeRequest(data);
 		}else{
 			return "Création annulé";
-		}
+		}*/
 	}
+
+	
 
 	/**
 	 * Genere une requqte de login
