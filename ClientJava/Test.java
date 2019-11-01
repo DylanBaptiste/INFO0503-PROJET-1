@@ -5,6 +5,7 @@ import java.util.Scanner;
 import javax.naming.ldap.ManageReferralControl;
 
 import java.awt.Color;
+import java.lang.reflect.Array;
 
 import org.json.*;
 
@@ -103,7 +104,17 @@ public class Test {
 				}
 				case "4": 
 				{
-					System.out.print("Tu casses les couilles");
+					String tmpresultRequest = client.requestGetSondageByAdmin(saisieUtilisateur);
+					resultRequest = manageResult(tmpresultRequest);
+
+					try{
+						JSONObject jsonRequest = new JSONObject(tmpresultRequest);
+						if(jsonRequest.has("sondages")){
+							for(int i = 0; i < jsonRequest.getJSONArray("sondages").length(); i++){
+								resultRequest += "\n\t- "+jsonRequest.getJSONArray("sondages").get(i);
+							}
+						}
+					}catch(JSONException e){}
 					break;
 				}
 				case "8": 
