@@ -41,6 +41,7 @@ public class Client {
 	 */
 	public String requestCreateSondage(Scanner saisieUtilisateur){
 
+		/*
 		Question q1 = new Question("question 1");
 		Question q2 = new Question("question 2");
 		
@@ -77,88 +78,71 @@ public class Client {
 		JSONObject data = s.toJSON().put("action", 3); 
 		System.out.println(data.toString());
 		return makeRequest(data);
-		
-
-		/*
-		sondageData =
-		[
-			"question 1" =>
-			[ 
-				"rep 1 q 1" => ["jean-louis", "jean-jean"],
-				"rep 2 q 1" => ["jean-louis", "jean-jean"]
-			],
-			"question 2" =>
-			[
-				"rep 1 q 2" => ["jean-louis", "jean-jean"],
-				"rep 2 q 2" => ["jean-louis", "jean-jean", "toto"],
-				"rep 3 q 2" => ["jean-louis", "jean-jean", "toto"]
-			]
-		]
 		*/
 
-		//On peux utiliser HashMap à la place de Pair pour forcer le fait d'avoir des questions et reponses unique
-		//Pair<String, Pair<String, String[]>> sondageData = new Pair<String, Pair<String, String[]>>();
-		
-		//Pair marche pas....
-		/*HashMap<String, HashMap<String, Set<String>>> sondageData = new HashMap<String, HashMap<String, Set<String>>>();
-		String question = "";
-		HashMap<String, Set<String>> reponses = new HashMap<String, Set<String>>();
-		String currentReponse = "";
 		int MAX_Q = 10;
 		int MAX_R = 5;
 		String quitCode = "q";
 		String abortCode = "a";
 		boolean isAbort = false;
+		String input = "";
 
 		System.out.print("Titre du sondage: ");
-		String RecupTitle = saisieUtilisateur.nextLine();
+		Sondage sondage = new Sondage(this.id, saisieUtilisateur.nextLine());
+		
+		Question currentQuestion = null;
+		Reponse currentReponse = null;
 
 		while(true){
 
-			System.out.print("QUESTION n"+sondageData.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
+			System.out.print("- QUESTION n"+sondage.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
 
-			question = saisieUtilisateur.nextLine();
-			if(!question.equals(quitCode) && !question.equals(abortCode) && sondageData.size() < MAX_Q){
+			input = saisieUtilisateur.nextLine();
+			
+			currentQuestion = new Question(input);
+			sondage.ajouterQuestion(currentQuestion);
+
+			if(!input.equals(quitCode) && !input.equals(abortCode) && sondage.size() < MAX_Q){
+				
 				while(true){
 
-					System.out.print("("+question+") REPONSE n"+reponses.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
+					System.out.print("\t- REPONSE n"+currentQuestion.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
 
-					currentReponse = saisieUtilisateur.nextLine();
+					input = saisieUtilisateur.nextLine();
 					
-					if( !currentReponse.equals(quitCode) && reponses.size() <= MAX_R){
-						//verification que currentReponse est unique ?
-						reponses.put(currentReponse, null );
+					if( !input.equals(quitCode) && !input.equals(abortCode) && currentQuestion.size() <= MAX_R){
+						currentReponse = new Reponse(input);
+						currentQuestion.ajouterReponse(currentReponse);
 					}else{
 						
-						if(currentReponse.equals(quitCode)){
+						if(input.equals(quitCode)){
 							System.out.println("T'as quitté");
 							break;
 						}
-						if(currentReponse.equals(abortCode)){
+						if(input.equals(abortCode)){
 							System.out.println("Vous avez annulé");
 							isAbort = true;
 							break;
 						}
-						if(reponses.size() < 2){
-							System.out.println("Vous devez ajouter au moins 2 reponses par question => "+question+" est supprimé de ce sondage");
-							sondageData.remove(question);
-						}
-						if(reponses.size() >= MAX_R){
+						//if(currentQuestion.size() < 2){
+						//	System.out.println("Vous devez ajouter au moins 2 reponses par question => "+question+" est supprimé de ce sondage");
+						//	sondageData.remove(question);
+						//}
+						if(currentQuestion.size() >= MAX_R){
 							System.out.println("MAX REPONSES");
 							break;
 						}
 					}
 				}
-				sondageData.put(question, reponses);
-				reponses = new HashMap<String, Set<String>>();
+				sondage.ajouterQuestion(currentQuestion);
 
 			}
 			else{
-				if(sondageData.size() == 0){
+				if(sondage.size() == 0){
 					System.out.println("Aucun sondage créé");
 					isAbort = true;
 				}
-				if(currentReponse.equals(abortCode)){
+				if(input.equals(abortCode)){
 					System.out.println("Vous avez annulé");
 					isAbort = true;
 				}
@@ -166,7 +150,7 @@ public class Client {
 			}
 		}
 
-		System.out.println("Sondage.sondageData: "+sondageData.toString());
+		System.out.println("Sondage.sondageData:\n"+sondage.toString());
 		
 		
 		int isValid = -1;
@@ -186,20 +170,18 @@ public class Client {
 		}
 
 		//créé l'objet Sondage
-		Sondage s = new Sondage(this.id, RecupTitle, null );
-		System.out.println(s.toJSON());
+		System.out.println(sondage.toJSON());
 
 		if(isValid == 1){
-			JSONObject data = new JSONObject()
-			.put("action", CREATESONDAGE_ACTION)
-			.put("id", this.id)
-			//.put("sondage", s.toJSON)
-			;
+			JSONObject data = sondage.toJSON().put("action", CREATESONDAGE_ACTION);
+
+			System.out.println(data.toString());
 			
 			return makeRequest(data);
+
 		}else{
 			return "Création annulé";
-		}*/
+		}
 	}
 
 	public String requestGetSondageByAdmin(Scanner saisieUtilisateur){
@@ -264,7 +246,7 @@ public class Client {
 	public void displayMenu(String lastResultRequest){
 		
 		System.out.println('\n'+lastResultRequest+"\033[0m");
-		
+
 		System.out.print("\n----======= MENU =======-----");
 		System.out.print( this.id == "" ?  "\n| ("+LOGIN_ACTION+") login" : "\n| Vous êtes connecté en tant que " +this.id);
 		System.out.print( this.id == "" ?  "\n| (2) Créer un compte" : "");

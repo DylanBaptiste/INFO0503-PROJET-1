@@ -21,6 +21,10 @@ public class Sondage {
     public void ajouterQuestion(Question question) {
     	sondageData.add(question);
     }
+
+    public int size() {
+    	return sondageData.size();
+    }
     
     /*public Question getQuestion(int i) {
         Question resultat = null;

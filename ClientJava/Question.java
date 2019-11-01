@@ -26,6 +26,10 @@ public class Question {
         this.reponses.add(value);
     }
 
+    public int size(){
+        return this.reponses.size();
+    }
+
     public JSONObject toJSON(){
         JSONObject tmpobj = new JSONObject();
         for (Reponse reponse : reponses) {
