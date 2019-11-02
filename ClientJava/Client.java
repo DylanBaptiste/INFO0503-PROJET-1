@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.OutputStreamWriter;
 //import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
@@ -19,14 +21,47 @@ import java.net.MalformedURLException;
 
 public class Client {
 
-	private final String URL_API			= "http://localhost/INFO0503-PROJET-1/ServeurPHP/api.php";
+	private String URL_API;
 	private final int LOGIN_ACTION			= 1;
 	private final int CREATE_ACTION			= 2;
 	private final int CREATESONDAGE_ACTION	= 3;
 
 	private String id = "";
 
-	public Client () { }
+	public Client() {
+		String jsonStr = "";
+		try{
+			File fichier = new File("config.json");
+			
+			if(!fichier.exists()){
+				fichier.createNewFile();
+			}
+			
+			BufferedReader br = new BufferedReader(new FileReader(fichier.getAbsoluteFile()));
+			String line;
+			while ((line = br.readLine()) != null) {
+				jsonStr += line;
+			}
+			br.close();
+		}catch(Exception e){
+			System.out.println("Impossible de charger le fichier de config");
+			System.exit(-1);
+		}
+
+		JSONObject json = null;
+		try{
+			json = new JSONObject(jsonStr);
+			if(json.has("URL_API")){
+				this.URL_API = json.getString("URL_API");
+			}
+			
+		}catch(Exception e){
+			System.out.println("Fichier de config non valide");
+			System.exit(-1);
+		}
+
+		
+	}
 
 	public String getId() { return id; }
 
@@ -40,7 +75,13 @@ public class Client {
 			return "Vous n'etes pas connecté";
 		}
 
-		String sondageString = requestGetSondage(saisieUtilisateur);
+		System.out.print("Administrateur du sondage: ");
+		String admin = saisieUtilisateur.nextLine();
+
+		System.out.print("titre du sondage: ");
+		String titre = saisieUtilisateur.nextLine();
+
+		String sondageString = requestGetSondage(admin, titre);
 		
 		JSONObject json = null;
         try{
@@ -80,12 +121,8 @@ public class Client {
 		return makeRequest(data);
 	}
 
-	private String requestGetSondage(Scanner saisieUtilisateur){
-		System.out.print("Administrateur du sondage: ");
-		String admin = saisieUtilisateur.nextLine();
-
-		System.out.print("titre du sondage: ");
-		String titre = saisieUtilisateur.nextLine();
+	private String requestGetSondage(String admin, String titre){
+		
 
 		JSONObject data = new JSONObject()
 			.put("action", 10)
@@ -93,6 +130,35 @@ public class Client {
 			.put("titre", titre)
 			;
 		return makeRequest(data);
+	}
+
+	public String requestVoirVote(Scanner saisieUtilisateur){
+
+		if(this.id.equals("")){
+			return "Vous n'etes pas connecté";
+		}
+
+		System.out.print("Nom du sondage: ");
+		String titre = saisieUtilisateur.nextLine();
+
+		String sondageString = requestGetSondage(this.id, titre);
+		
+		JSONObject json = null;
+        try{
+            json = new JSONObject(sondageString);
+        }
+        catch(Exception e){
+            return "ce sondage à un probleme";
+		}
+
+		if(json.has("error")){
+			return json.toString();
+		}
+		Sondage sondage = new Sondage(json);
+
+		return sondage.toStringAndVote();
+
+
 	}
 	
 	/**
@@ -264,13 +330,14 @@ public class Client {
 		System.out.print("\n----======= MENU =======-----");
 		System.out.print( this.id == "" ?  "\n| ("+LOGIN_ACTION+") login" : "\n| Vous êtes connecté en tant que " +this.id);
 		System.out.print( this.id == "" ?  "\n| (2) Créer un compte" : "");
-		System.out.print("\n| (3) Creer un sondage");
+
+		System.out.print( this.id != "" ?  "\n| (3) Creer un sondage" : "");
 		System.out.print("\n| (4) Voir les sondages d'un admin");
-		System.out.print("\n| (5) Voter");
-		System.out.print("\n| (6) ------");
-		System.out.print("\n| (8) quitter");
+		System.out.print( this.id != "" ?  "\n| (5) Voter" : "");
+		System.out.print( this.id != "" ?  "\n| (6) Voir le nombre de vote sur un de ses sondage" : "");
 		System.out.print( this.id != "" ?  "\n| (9) Se déconnecter" : "");
-		System.out.print("\n----======= **** =======-----\n\n");  
+		System.out.print("\n| (8) quitter");  
+		System.out.print("\n----======= **** =======-----\n\n");
 
 	}
 		

@@ -83,6 +83,15 @@ public class Question {
         return question;
     }*/
 
+	public String toStringAndVote() {
+        int i = 0;
+        String str = this.quest;
+        for (Reponse reponse : this.reponses) {
+            str += "\n\t"+(++i)+"- "+reponse.toStringAndVote();
+        }
+        return str;
+	}
+
     @Override
 	public String toString() {
         int i = 0;
@@ -93,5 +102,6 @@ public class Question {
         return str;
 	}
 
+    
 
 }

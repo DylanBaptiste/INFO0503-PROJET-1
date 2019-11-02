@@ -2,27 +2,13 @@ package clientjava;
 
 import java.util.Scanner;
 
-import javax.naming.ldap.ManageReferralControl;
-
-import java.awt.Color;
-import java.lang.reflect.Array;
-
 import org.json.*;
-
-//import java.util.Scanner;
-//import java.io.IOException;
-//import java.io.InputStreamReader;
-//import java.io.BufferedReader;
-//import java.io.OutputStreamWriter;
-//import java.io.UnsupportedEncodingException;
-//import java.net.URLConnection;
-//import java.net.URL;
-//import java.net.URLEncoder;
-//import java.net.MalformedURLException;
 
 
 
 public class Test {
+
+	
 
 	private static String getKey(JSONObject json, String key){
 		return json.has(key) ? json.optString(key) : "";
@@ -119,6 +105,14 @@ public class Test {
 				{
 					//voter à un sondage
 					String tmpresultRequest = client.requestVoter(saisieUtilisateur);
+					resultRequest = manageResult(tmpresultRequest);
+					
+					break;
+				}
+				case "6": 
+				{
+					
+					String tmpresultRequest = client.requestVoirVote(saisieUtilisateur);
 					resultRequest = manageResult(tmpresultRequest);
 					
 					break;

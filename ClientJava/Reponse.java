@@ -17,7 +17,6 @@ public class Reponse {
 		this.rep = str;
 	}
 
-	//{"administrateur":"login","titre":"titre","sondageData":[{"question 2":{"reponse 4":["toto"],"reponse 3":[]}},{"question 1":{"reponse 2":["toto","titi"],"reponse 1":["titi","tata"]}}]}
 	public Reponse(String r, JSONArray jsonArray) {
 
 		this.SetUser = new HashSet<String>();
@@ -26,16 +25,6 @@ public class Reponse {
 		for(int i = 0; i< jsonArray.length(); i++){
 			this.voter(jsonArray.getString(i));
 		}
-
-        /*this.reponses = new HashSet<Reponse>();
-        String questionString = json.names().getString(0);
-        this.rp = questionString;
-
-        this.ajouterReponse(new Reponse(json.getJSONObject(questionString));
- 
-        }*/
-
-    	
     }
 
 	public Set<String> getSetUser() {
@@ -54,15 +43,14 @@ public class Reponse {
 		return new JSONObject().put(this.rep, new JSONArray(this.SetUser));
 	}
 	
-	/*public static Reponse deserializeReponse(JSONObject json) {
-        String reponse =  json.getString("dreponse");
-
-        return new Reponse(reponse);
-	}*/
+	
+	public String toStringAndVote() {
+		return this.rep+" => "+"Nombre de vote(s) : "+this.SetUser.size()+" : "+this.SetUser.toString();
+	}
 
 	@Override
 	public String toString() {
-		return this.rep+" => "+this.SetUser.toString();
+		return this.rep;
 	}
 	
 }

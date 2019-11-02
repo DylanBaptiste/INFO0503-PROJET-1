@@ -46,6 +46,8 @@ public class Sondage {
     	return sondageData.size();
     }
 
+    
+
     public Set<Question> getQuestions() {
     	return this.sondageData;
     }
@@ -74,6 +76,15 @@ public class Sondage {
             .put("sondageData", tmpobj );
     }
 
+
+    public String toStringAndVote(){
+        int i = 0;
+        String str = this.titre+"("+this.sondageData.size()+" questions):\n";
+        for (Question question : this.sondageData) {
+            str += "\n"+(++i)+"- "+question.toStringAndVote();
+        }
+        return str;
+    }
 
 
     @Override
