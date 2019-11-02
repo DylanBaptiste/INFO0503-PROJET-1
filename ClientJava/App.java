@@ -6,7 +6,7 @@ import org.json.*;
 
 
 
-public class Test {
+public class App {
 
 	
 
@@ -125,11 +125,11 @@ public class Test {
 				case "9": 
 				{
 					client.setId("");
-					resultRequest = "\033[32mVous vous êtes déconnecté.";
+					resultRequest = "Vous vous êtes déconnecté.";
 					break;
 				}
 				default: 
-					resultRequest = "\033[31mCette action n'existe pas";
+					resultRequest = "Cette action n'existe pas";
 					break;
 			}
 		}while( (!recupOption.equals("8")) );

@@ -4,17 +4,14 @@ import java.util.*;
 
 import org.json.JSONObject;
 
-//import java.util.Scanner;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.OutputStreamWriter;
-//import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.net.URL;
-//import java.net.URLEncoder;
 import java.net.MalformedURLException;
 
 
