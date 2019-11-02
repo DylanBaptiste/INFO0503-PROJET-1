@@ -311,7 +311,6 @@ public class Client {
 			.put("login", RecupLogin)
 			.put("password", RecupPassword)
 			.put("confirmPassword", confirmPassword);
-		System.out.println(data);
 	
 		return makeRequest(data);	
 	}
@@ -328,10 +327,10 @@ public class Client {
 		System.out.print( this.id == "" ?  "\n| ("+LOGIN_ACTION+") login" : "\n| Vous êtes connecté en tant que " +this.id);
 		System.out.print( this.id == "" ?  "\n| (2) Créer un compte" : "");
 
-		System.out.print( this.id != "" ?  "\n| (3) Creer un sondage" : "");
+		System.out.print( this.id != "" ?  "\n| (3) Créer un sondage" : "");
 		System.out.print("\n| (4) Voir les sondages d'un admin");
 		System.out.print( this.id != "" ?  "\n| (5) Voter" : "");
-		System.out.print( this.id != "" ?  "\n| (6) Voir le nombre de vote sur un de ses sondage" : "");
+		System.out.print( this.id != "" ?  "\n| (6) Voir le nombre de vote(s) sur un de ses sondage" : "");
 		System.out.print( this.id != "" ?  "\n| (9) Se déconnecter" : "");
 		System.out.print("\n| (8) quitter");  
 		System.out.print("\n----======= **** =======-----\n\n");

@@ -45,7 +45,7 @@ public class Reponse {
 	
 	
 	public String toStringAndVote() {
-		return this.rep+" => "+"Nombre de vote(s) : "+this.SetUser.size()+" : "+this.SetUser.toString();
+		return this.rep+"\t\t"+this.SetUser.size()+" vote(s) :"+this.SetUser.toString();
 	}
 
 	@Override
