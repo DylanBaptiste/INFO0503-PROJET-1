@@ -1,11 +1,8 @@
 <?php
 header("Content-type:application/json; utf-8");
-
 include("api.class.php");
 $api = new api();
-
 $data = json_decode(file_get_contents('php://input'), true);
-
 if( isset($data) )
 {
     if(isset($data['action']))
@@ -17,14 +14,12 @@ if( isset($data) )
                 else
                     echo $api->error("Données de connexion non fournis");
                 break;
-
             case "2":
                 if( isset($data['login']) && isset($data['password'])&& isset($data['confirmPassword']) )
                     echo $api->create($data['login'], $data['password'],$data['confirmPassword']);
                 else
                     echo $api->error("Données de creation non fournis");
                 break;
-
             case "3":
                 if( isset($data['login']) && isset($data['titre']) && isset($data['sondageData']) )
                     echo $api->createSondage($data['login'], $data['titre'], $data['sondageData']);
@@ -50,8 +45,13 @@ if( isset($data) )
                 else
                     echo $api->error("Informations pour récupéré non completes");
                 break;
+              case "7":
+                
+                    echo $api->getAdmin($data['admin']);
 
+                break;
             default:
+            
                 echo $api->error("Cette action n'existe pas");
                 break;
         }
@@ -60,13 +60,9 @@ if( isset($data) )
     {
         echo $api->error("Aucune action choisie.");
     }
-
 }
 else
 {
     echo $api->error('Aucune données envoyées');
 }
-
-
-
 ?>
