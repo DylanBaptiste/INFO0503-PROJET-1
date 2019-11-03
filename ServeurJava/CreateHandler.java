@@ -1,5 +1,6 @@
 package serveurjava;
 
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.Headers;
@@ -170,19 +171,4 @@ class CreateHandler implements HttpHandler {
 		}
 
 
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+}
