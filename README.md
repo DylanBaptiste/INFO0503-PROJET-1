@@ -7,7 +7,7 @@ Une application java de sondage dont le front-end est en java (ligne de commande
 Pour tester le programme veuillez acceder au repertoire ApplicationJar
 
 Executez les deux application java -jar ServeurJava.jar et java -jar Client.jar
-Il faut configurer le fichier `config.json` qui se trouve à la racine du projet pour que l'application puisse se connecter à l'api php.
+Il faut configurer le fichier `config.json` qui se trouve dans le repertoire ApplicationJar afin que l'application puisse se connecter à l'api php.
 
 ```js
 {
