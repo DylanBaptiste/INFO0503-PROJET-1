@@ -82,29 +82,19 @@ class api
 	}
 	
 	public function createSondage($login = "", $titre = "", $sondageData = null){ 
-		if($login == ""){
-			return $this->error("Vous n'êtes pas identifié");
-		}
-		$titre = trim($titre);
-		if($titre == ""){
-			return $this->error("Choisissez un titre pour le sondage");
-		}
-		if($sondageData == null){
-			return $this->error("Aucun sondage envoyé");
-		}
-		$sondage = new Sondage($login, $titre, $sondageData);
-		if($sondage->isValid() == false){
-			return $this->error("Le sondage n'est pas valide");
-		}
-		$ret = $this->writeSondageVote($login, $titre, $sondage);
-		if($ret == true){
-			return $this->success("Votre sondage est enregistré");
-		}else{
-			return $this->error("Creation impossible titre deja existant ?");t;
-		}
 		
-		
-	}
+		if($login == ""){ return $this->error("Vous n'êtes pas identifié"); }
+		 $titre = trim($titre); if($titre == " ")
+		 { return $this->error("Choisissez un titre pour le sondage"); }
+		  if($sondageData == null)
+		  { return $this->error("Aucun sondage envoyé"); } 
+		  $sondage = new Sondage($login, $titre, $sondageData); 
+		  if($sondage->isValid() == false){ return $this->error("Le sondage n'est pas valide"); }
+		   $ret = $this->writeSondageVote($login, $titre, $sondage); if($ret == true){
+				return $this->success("Votre sondage est enregistré"); }
+				else{ return $this->error("Creation impossible titre deja existant ?");t; }
+
+}
 	public function getSondageFile($login = "", $titre = ""){ 
 		
 		if($login == ""){
@@ -122,6 +112,7 @@ class api
 		if(file_exists($filePath) === false){
 			return $this->error("Ce sondage existe pas");
 		}
+
 		$file = @fopen($filePath, "r");
 		if($file === false){
 			return $this->error("Ce sondage existe pas");
@@ -145,27 +136,27 @@ class api
 			return $this->error("Erreur d'ecriture PHP");
 		}
 	}
-	public function voter($administrateur= "", $titre = "", $sondageData = ""){ 
+	public function voter($administrateur= "", $titre = "", $sondageData = "")
+	{ 
 		if($this->folder_exist("sondages/".$administrateur) == false){
-			return $this->error("Cette administrateur n'existe pas");
+			 return $this->error("Cette administrateur n'existe pas"); 
+			} 
+	$titre = trim($titre); if($titre == " ")
+	{ return $this->error("ntm fdp donne moi un titre correcte");
+	} 
+	$formatedtitre = preg_replace('/\s+/',"-",$titre); 
+	$filePath = "sondages/".$administrateur."/".$formatedtitre.".json"; 
+	if( !(file_exists($filePath)) ){ 
+		return $this->error("Ce sondage n'existe pas"); 
+	} if($sondageData == "")
+	{ return $this->error("Aucun vote(s) envoyé"); }
+	 $sondage = new Sondage($administrateur, $titre, $sondageData); 
+	 if($sondage->isValid() == false){
+		  return $this->error("Le sondage n'est pas valide"); 
 		}
-		$filePath = "sondages/".$administrateur."/".$titre.".json";
-		if( !(file_exists($filePath)) ){
-			return $this->error("Ce sondage n'existe pas");
-		}
-		if($sondageData == ""){
-			return $this->error("Aucun vote(s) envoyé");
-		}
-		$sondage = new Sondage($administrateur, $titre, $sondageData);
-		if($sondage->isValid() == false){
-			return $this->error("Le sondage n'est pas valide");
-		}
-		$ret = $this->writeSondageVote($administrateur, $titre, $sondage);
-		if($ret == true){
-			return $this->success("Votes enregistrés");
-		}else{
-			return $ret;
-		}
+	  $ret = $this->writeSondageVote($administrateur, $titre, $sondage); 
+	  if($ret == true){ return $this->success("Votes enregistrés"); }
+	  else{ return $ret; }
 	}
 	public function getSondage($admin = ""){
 		if($admin == ""){
