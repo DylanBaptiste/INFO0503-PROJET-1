@@ -96,7 +96,7 @@ class api
 		if($sondage->isValid() == false){
 			return $this->error("Le sondage n'est pas valide");
 		}
-		$ret = $this->writeSondage($login, $titre, $sondage);
+		$ret = $this->writeSondageVote($login, $titre, $sondage);
 		if($ret == true){
 			return $this->success("Votre sondage est enregistré");
 		}else{
@@ -129,26 +129,7 @@ class api
 		return fread($file, filesize($filePath));
 	}
 
-	private function writeSondage($login, $titre, $sondage){
-		try{
-			$formatedtitre = preg_replace('/\s+/',"-",$titre);
-			$file = "sondages/".$login."/".$formatedtitre.".json";
-			
-			if(!file_exists(dirname($file))){
-				mkdir(dirname($file), 0777, true);
-			$file = fopen("sondages/".$login."/".$formatedtitre.".json", "w");
-			fwrite($file, $sondage->toJSON());
-			return true;
-			}
-			else
-			{
-			return false;
-			}
-		}
-		catch(Exception $e){
-			return $this->error("Erreur d'ecriture PHP");
-		}
-	}
+	
 	private function writeSondageVote($login, $titre, $sondage){
 		try{
 			$formatedtitre = preg_replace('/\s+/',"-",$titre);
