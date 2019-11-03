@@ -19,7 +19,7 @@ public class App {
 			JSONObject jsonRequest = new JSONObject(resultRequest);
 			String success = getKey(jsonRequest, "success");
 			String error   = getKey(jsonRequest, "error");
-			
+
 			if(success != ""){
 				resultRequest = "Succes: "+ success;
 			}else{
@@ -28,6 +28,7 @@ public class App {
 		}catch(JSONException e){
 			resultRequest += "";
 		}
+		
 		return resultRequest;
 	}
 	public static void main(String[] args) {	
@@ -117,6 +118,21 @@ public class App {
 					
 					break;
 				}
+				case "7": 
+				{
+					String tmpresultRequest = client.requestGetAdmin();
+					resultRequest = manageResult(tmpresultRequest);
+
+					try{
+						JSONObject jsonRequest = new JSONObject(tmpresultRequest);
+						if(jsonRequest.has("sondages")){
+							for(int i = 0; i < jsonRequest.getJSONArray("sondages").length(); i++){
+								resultRequest += "\n\t- "+jsonRequest.getJSONArray("sondages").get(i);
+							}
+						}
+					}catch(JSONException e){}
+					break;
+				}
 				case "8": 
 				{
 					System.out.print("Salut mon pote");
@@ -128,6 +144,8 @@ public class App {
 					resultRequest = "Vous vous êtes déconnecté.";
 					break;
 				}
+				
+				
 				default: 
 					resultRequest = "Cette action n'existe pas";
 					break;

@@ -71,7 +71,7 @@ public class Client {
 		if(this.id.equals("")){
 			return "Vous n'etes pas connecté";
 		}
-
+		
 		System.out.print("Administrateur du sondage: ");
 		String admin = saisieUtilisateur.nextLine();
 
@@ -97,15 +97,17 @@ public class Client {
 		int input = -1;
 		Sondage sondage = new Sondage(json);
 
-		System.out.println(sondage.size());
-
+		System.out.println("il y a " +sondage.size()+ " question dans ce sondage");
+		
 		for (Question q : sondage.getQuestions() ) {
 			//while(input < 0 || input > q.size() ){
-				System.out.println("("+(i++)+") - "+q.getQuestion());
+				System.out.println("Voici la question n°"+(i++)+" - "+q.getQuestion());
 				for (Reponse r : q.getReponses() ) {
+					
 					System.out.println("\t("+(j++)+") - "+r.getrep());
 				}
 				j = 0;
+				System.out.println("Rentrez le numero de la reponse pour voter merci");
 				System.out.println("Vote: ");
 				input = Integer.parseInt(saisieUtilisateur.nextLine());
 				if(input >= 0 && input <= q.size() ){
@@ -164,7 +166,7 @@ public class Client {
 	 * @return la réponse du serveur PHP
 	 */
 	public String requestCreateSondage(Scanner saisieUtilisateur){
-
+		int isValid = -1;
 		int MAX_Q = 10;
 		int MAX_R = 10;
 		String quitCode = "q";
@@ -173,7 +175,9 @@ public class Client {
 		String input = "";
 
 		System.out.print("Titre du sondage: ");
-		Sondage sondage = new Sondage(this.id, saisieUtilisateur.nextLine());
+		input = saisieUtilisateur.nextLine();
+		if (input.equals("") ) {isValid = 0;} 
+		Sondage sondage = new Sondage(this.id, input );
 		
 		Question currentQuestion = null;
 		Reponse currentReponse = null;
@@ -186,7 +190,7 @@ public class Client {
 			
 			currentQuestion = new Question(input);
 			
-			if(!input.equals(quitCode) && !input.equals(abortCode) && sondage.size() < MAX_Q){
+			if(!input.equals(quitCode) &&  !input.equals("") && !input.equals(abortCode) && sondage.size() < MAX_Q){
 			
 				sondage.ajouterQuestion(currentQuestion);
 				
@@ -195,14 +199,13 @@ public class Client {
 					System.out.print("\t- REPONSE n"+currentQuestion.size()+" ("+quitCode+": quitter, "+abortCode+": avorter): ");
 
 					input = saisieUtilisateur.nextLine();
-					
-					if( !input.equals(quitCode) && !input.equals(abortCode) && currentQuestion.size() < MAX_R){
+					if (input.equals("") ) {isValid = 0;} 
+					if( !input.equals(quitCode) && !input.equals(abortCode) && !input.equals("") && currentQuestion.size() < MAX_R){
 						currentReponse = new Reponse(input);
 						currentQuestion.ajouterReponse(currentReponse);
 					}else{
 						
 						if(input.equals(quitCode)){
-							System.out.println("T'as quitté");
 							break;
 						}
 						if(input.equals(abortCode)){
@@ -239,7 +242,7 @@ public class Client {
 		System.out.println("Voici votre sondage: "+sondage.toString());
 		
 		
-		int isValid = -1;
+		
 
 		while(isValid == -1 && !isAbort){
 			System.out.print("\nValider ce sondage (y/n) ? ");
@@ -260,7 +263,16 @@ public class Client {
 			return "Création annulé";
 		}
 	}
+	
+	public String requestGetSondageForAdmin(){
 
+		JSONObject data = new JSONObject()
+			.put("action", 4)
+			.put("admin", this.id);
+
+		return makeRequest(data);
+	}
+	
 	public String requestGetSondageByAdmin(Scanner saisieUtilisateur){
 
 		System.out.print("Nom de l'administrateur: ");
@@ -273,6 +285,12 @@ public class Client {
 		return makeRequest(data);
 	}
 
+	public String requestGetAdmin() {
+		JSONObject data = new JSONObject()
+				.put("action", 7)
+				.put("admin","../sondages");
+			return makeRequest(data);
+	}
 
 	/**
 	 * Genere une requqte de login
@@ -326,13 +344,14 @@ public class Client {
 		System.out.print("\n----======= MENU =======-----");
 		System.out.print( this.id == "" ?  "\n| ("+LOGIN_ACTION+") login" : "\n| Vous êtes connecté en tant que " +this.id);
 		System.out.print( this.id == "" ?  "\n| (2) Créer un compte" : "");
-
 		System.out.print( this.id != "" ?  "\n| (3) Créer un sondage" : "");
-		System.out.print("\n| (4) Voir les sondages d'un admin");
+		System.out.print( this.id != "" ?  "\n| (4) Voir les sondages d'un admin" : "");
 		System.out.print( this.id != "" ?  "\n| (5) Voter" : "");
 		System.out.print( this.id != "" ?  "\n| (6) Voir le nombre de vote(s) sur un de ses sondage" : "");
-		System.out.print( this.id != "" ?  "\n| (9) Se déconnecter" : "");
+		System.out.print( this.id != "" ?  "\n| (7) Voir les Utilisateur ayant un sondage" : "");
 		System.out.print("\n| (8) quitter");  
+		System.out.print( this.id != "" ?  "\n| (9) Se déconnecter" : "");
+		
 		System.out.print("\n----======= **** =======-----\n\n");
 
 	}
@@ -363,6 +382,7 @@ public class Client {
 			writer.write(data.toString());
 			writer.flush();
 			writer.close();
+
 		} catch(IOException e) {
 			return ("Erreur lors de l'envoi de la requete : " + e);        
 		}
